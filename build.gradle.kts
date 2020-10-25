@@ -32,10 +32,15 @@ repositories {
     mavenCentral()
 }
 
+val ktlint by configurations.creating
+
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
     implementation("net.sf.proguard:proguard-retrace:" + Deps.retraceVersion)
     implementation("com.squareup.okio:okio:" + Deps.okioVersion)
+
+    ktlint("com.pinterest:ktlint:" + Deps.ktlintVersion)
+
     "testImplementation"(platform("org.junit:junit-bom:" + Deps.junitVersion))
     "testImplementation"("org.junit.jupiter:junit-jupiter")
     "testImplementation"("org.hamcrest:hamcrest-library:" + Deps.hamcrestVersion)
@@ -82,13 +87,36 @@ tasks {
         }
     }
 
+    val ktlint by registering(JavaExec::class) {
+        group = "Verification"
+        description = "Check Kotlin code style."
+        main = "com.pinterest.ktlint.Main"
+        classpath = ktlint
+        args = listOf("src/**/*.kt", "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/reports/ktlint.xml")
+    }
+
+    check {
+        dependsOn(ktlint)
+    }
+
+    dependencyUpdates {
+        revision = "release"
+
+        rejectVersionIf {
+            listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
+                """(?i).*[.-]?$qualifier[.\d-]*""".toRegex()
+                    .containsMatchIn(candidate.version)
+            }
+        }
+    }
+
     // region IntelliJ Plugin
     patchPluginXml {
         changeNotes("""<b>1.0.0</b><br/>First Version""")
     }
 
     publishPlugin {
-        token(getProperty("intellij.token"))
+        token(System.getProperty("intellij.token"))
     }
     // endregion
 }

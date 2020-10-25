@@ -39,10 +39,7 @@ class ProguardRetraceUnscramblerShould {
 
     @BeforeEach
     fun setup() {
-        with(javaClass.classLoader) {
-            mappingFilePath = getResource("mapping.txt")?.path ?: error("mapping.txt not found")
-        }
-
+        mappingFilePath = classLoader.getResource("mapping.txt")?.path ?: error("mapping.txt not found")
     }
 
     @Test
