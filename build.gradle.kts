@@ -14,25 +14,38 @@
  * limitations under the License.
  */
 
-
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Date
 
 plugins {
     id("org.jetbrains.intellij") version Deps.intellijVersion
     kotlin("jvm") version Deps.kotlinVersion
+    id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
 }
 
 group = "com.cmgapps.intellij"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     jcenter()
     mavenCentral()
 }
 
+val ktlint by configurations.creating
+
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
-    testImplementation("junit:junit:4.12")
+    implementation("net.sf.proguard:proguard-retrace:" + Deps.retraceVersion)
+    implementation("com.squareup.okio:okio:" + Deps.okioVersion)
+
+    ktlint("com.pinterest:ktlint:" + Deps.ktlintVersion)
+
+    "testImplementation"(platform("org.junit:junit-bom:" + Deps.junitVersion))
+    "testImplementation"("org.junit.jupiter:junit-jupiter")
+    "testImplementation"("org.hamcrest:hamcrest-library:" + Deps.hamcrestVersion)
+    "testImplementation"("org.mockito:mockito-core:" + Deps.mockitoVersion)
+    "testImplementation"("org.mockito:mockito-junit-jupiter:" + Deps.mockitoVersion)
 }
 
 intellij {
@@ -51,7 +64,59 @@ tasks {
         }
     }
 
-    patchPluginXml {
-        changeNotes("""<b>1.0.0</b><br/>First Version""")
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+        }
     }
+
+    jar {
+        manifest {
+            attributes(
+                mapOf(
+                    "Implementation-Title" to project.name,
+                    "Implementation-Version" to project.version,
+                    "Built-By" to System.getProperty("user.name"),
+                    "Built-Date" to Date(),
+                    "Built-JDK" to System.getProperty("java.version"),
+                    "Built-Gradle" to gradle.gradleVersion,
+                    "Built-Kotlin" to Deps.kotlinVersion
+                )
+            )
+        }
+    }
+
+    val ktlint by registering(JavaExec::class) {
+        group = "Verification"
+        description = "Check Kotlin code style."
+        main = "com.pinterest.ktlint.Main"
+        classpath = ktlint
+        args = listOf("src/**/*.kt", "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/reports/ktlint.xml")
+    }
+
+    check {
+        dependsOn(ktlint)
+    }
+
+    dependencyUpdates {
+        revision = "release"
+
+        rejectVersionIf {
+            listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
+                """(?i).*[.-]?$qualifier[.\d-]*""".toRegex()
+                    .containsMatchIn(candidate.version)
+            }
+        }
+    }
+
+    // region IntelliJ Plugin
+    patchPluginXml {
+        // changeNotes("""<b>1.0.0</b><br/>First Version""")
+    }
+
+    publishPlugin {
+        token(project.property("intellij.token"))
+    }
+    // endregion
 }
