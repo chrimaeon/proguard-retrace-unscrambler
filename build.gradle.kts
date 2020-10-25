@@ -112,11 +112,11 @@ tasks {
 
     // region IntelliJ Plugin
     patchPluginXml {
-        changeNotes("""<b>1.0.0</b><br/>First Version""")
+        // changeNotes("""<b>1.0.0</b><br/>First Version""")
     }
 
     publishPlugin {
-        token(System.getProperty("intellij.token"))
+        token(project.property("intellij.token"))
     }
     // endregion
 }
