@@ -17,9 +17,11 @@
 <idea-plugin>
     <id>com.cmgapps.intellij.proguard-retrace-unscambler</id>
     <name>Proguard Retrace Unscrambler</name>
-    <vendor email="support@cmgapps.com" url="http://www.cmgapps.com">CMG Mobile Apps</vendor>
+    <vendor email="support@cmgapps.com" url="https://www.cmgapps.com">CMG Mobile Apps</vendor>
+    <idea-version since-build="181.4203"/>
 
-    <description><![CDATA[Unscrambler for Proguard's mapping files and Android's R8 mapping files]]></description>
+    <description><![CDATA[Adds Unscrambler support for Proguard's mapping files and Android's R8 mapping files.
+    Use to deobfuscate your stacktrace]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -28,6 +30,6 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <unscrambleSupport implementation="com.cmgapps.intellij.ProguardRetraceUnscrambler" />
+        <unscrambleSupport implementation="com.cmgapps.intellij.ProguardRetraceUnscrambler"/>
     </extensions>
 </idea-plugin>

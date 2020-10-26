@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
 
 plugins {
+    java
     id("org.jetbrains.intellij") version Deps.intellijVersion
     kotlin("jvm") version Deps.kotlinVersion
     id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
@@ -49,7 +50,9 @@ dependencies {
 }
 
 intellij {
-    version = "2018.1"
+    version = "2020.2"
+    updateSinceUntilBuild = false
+    setPlugins("java")
 }
 
 tasks {
