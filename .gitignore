@@ -3,3 +3,4 @@ build/
 .idea/*
 !.idea/.name
 !.idea/copyright
+!.idea/codeStyles
