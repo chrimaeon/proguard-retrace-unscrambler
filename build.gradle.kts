@@ -116,7 +116,10 @@ tasks {
     }
 
     publishPlugin {
-        token(project.property("intellij.token"))
+        // TODO read token from env if on CI
+        if (System.getenv("CI") == null) {
+            token(project.property("intellij.token"))
+        }
     }
     // endregion
 }
