@@ -20,7 +20,6 @@ import com.cmgapps.intellij.ProguardRetraceUnscrambler
 import com.intellij.openapi.project.Project
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.Matchers.nullValue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -55,9 +54,10 @@ class ProguardRetraceUnscramblerShould {
         assertThat(result, `is`(""))
     }
 
-    @Test
-    fun `return null when mapping file does not exist`() {
-        val result = ProguardRetraceUnscrambler().unscramble(project, "", "path/to/nowhere", null)
-        assertThat(result, nullValue())
-    }
+    // TODO create integration test
+    // @Test
+    // fun `show dialog when mapping file does not exist`() {
+    //     val result = ProguardRetraceUnscrambler().unscramble(project, "stacktrace", "path/to/nowhere", null)
+    //     assertThat(result, nullValue())
+    // }
 }
