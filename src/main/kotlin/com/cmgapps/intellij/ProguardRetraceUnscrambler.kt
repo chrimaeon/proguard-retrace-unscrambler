@@ -17,26 +17,35 @@
 package com.cmgapps.intellij
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
 import com.intellij.unscramble.UnscrambleSupport
 import okio.Buffer
 import proguard.retrace.ReTrace
+import java.awt.BorderLayout
+import java.awt.Dimension
 import java.io.File
 import java.io.LineNumberReader
 import java.io.PrintWriter
 import java.io.StringReader
+import java.util.ResourceBundle
+import javax.swing.Action
 import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 class ProguardRetraceUnscrambler : UnscrambleSupport<JComponent> {
     override fun getPresentableName() = "Proguard Retrace"
 
     override fun unscramble(project: Project, text: String, logName: String, settings: JComponent?): String? {
-        val mappingFile = File(logName)
-        if (logName.isBlank() || mappingFile.exists().not()) {
-            return null
-        }
+        if (logName.isBlank() || text.isBlank()) return text
 
-        if (text.isBlank()) {
-            return ""
+        val mappingFile = File(logName).also {
+            if (it.exists().not()) {
+                ErrorDialog(project, it.name).show()
+                return@unscramble null
+            }
         }
 
         return LineNumberReader(StringReader(text)).use { reader ->
@@ -45,6 +54,29 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JComponent> {
                 ReTrace(ReTrace.STACK_TRACE_EXPRESSION, false, mappingFile).retrace(reader, writer)
                 buffer.readUtf8()
             }
+        }
+    }
+}
+
+class ErrorDialog(project: Project, private val fileName: String) : DialogWrapper(project, false) {
+    private val bundle = ResourceBundle.getBundle("Bundle")
+
+    init {
+        init()
+    }
+
+    override fun createActions(): Array<Action> = arrayOf(okAction)
+
+    override fun createCenterPanel(): JComponent? = JPanel(BorderLayout()).apply {
+        JLabel(
+            bundle.getString("error_text").format(fileName),
+            Messages.getWarningIcon(),
+            SwingConstants.HORIZONTAL
+        ).apply {
+            iconTextGap = 10
+            preferredSize = Dimension(300, 100)
+        }.let {
+            add(it, BorderLayout.CENTER)
         }
     }
 }
