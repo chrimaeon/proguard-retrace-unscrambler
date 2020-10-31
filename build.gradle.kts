@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
+import kotlinx.html.b
+import kotlinx.html.br
+import kotlinx.html.li
+import kotlinx.html.p
+import kotlinx.html.stream.createHTML
+import kotlinx.html.ul
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
+    }
+}
 
 plugins {
     java
@@ -115,7 +127,31 @@ tasks {
 
     // region IntelliJ Plugin
     patchPluginXml {
-        // changeNotes("""<b>1.0.0</b><br/>First Version""")
+        val notes = createHTML(prettyPrint = false).p {
+            b {
+                +"1.0.0"
+            }
+            ul {
+                li {
+                    +"First Release"
+                }
+            }
+            br
+            b {
+                +"1.1.0"
+            }
+
+            ul {
+                li {
+                    +"Show dialog if mapping file cannot be found"
+                }
+            }
+        }
+
+        changeNotes(notes)
+        doLast {
+            logger.info("Patch Notes: $notes")
+        }
     }
 
     publishPlugin {
