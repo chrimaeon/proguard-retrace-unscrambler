@@ -15,13 +15,13 @@
  */
 
 object Deps {
-    const val depUpdatesPluginVersion = "0.33.0"
+    const val depUpdatesPluginVersion = "0.36.0"
     const val hamcrestVersion = "2.2"
-    const val intellijVersion = "0.6.1"
+    const val intellijVersion = "0.6.3"
     const val junitVersion = "5.7.0"
     const val kotlinVersion = "1.4.10"
     const val ktlintVersion = "0.39.0"
     const val mockitoVersion = "3.6.0"
     const val okioVersion = "2.9.0"
-    const val retraceVersion = "6.2.2"
+    const val retraceVersion = "7.0.1"
 }

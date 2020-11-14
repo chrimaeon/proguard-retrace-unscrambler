@@ -49,7 +49,7 @@ val ktlint by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
-    implementation("net.sf.proguard:proguard-retrace:" + Deps.retraceVersion)
+    implementation("com.guardsquare:proguard-retrace:" + Deps.retraceVersion)
     implementation("com.squareup.okio:okio:" + Deps.okioVersion)
 
     ktlint("com.pinterest:ktlint:" + Deps.ktlintVersion)

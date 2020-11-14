@@ -51,7 +51,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JComponent> {
         return LineNumberReader(StringReader(text)).use { reader ->
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
-                ReTrace(ReTrace.STACK_TRACE_EXPRESSION, false, mappingFile).retrace(reader, writer)
+                ReTrace(mappingFile).retrace(reader, writer)
                 buffer.readUtf8()
             }
         }
