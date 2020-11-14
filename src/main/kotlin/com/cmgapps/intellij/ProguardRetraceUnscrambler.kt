@@ -30,20 +30,35 @@ import java.io.PrintWriter
 import java.io.StringReader
 import java.util.ResourceBundle
 import javax.swing.Action
+import javax.swing.BoxLayout
+import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class ProguardRetraceUnscrambler : UnscrambleSupport<JComponent> {
+class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
+    private val bundle = ResourceBundle.getBundle("Bundle")
     override fun getPresentableName() = "Proguard Retrace"
 
-    override fun unscramble(project: Project, text: String, logName: String, settings: JComponent?): String? {
+    override fun unscramble(project: Project, text: String, logName: String, settings: JPanel?): String? {
+
+        val allClassNamesSetting: Boolean
+        val verboseSetting: Boolean
+
+        if (settings == null) {
+            allClassNamesSetting = false
+            verboseSetting = false
+        } else {
+            allClassNamesSetting = (settings.getComponent(ALL_CLASS_NAMES_INDEX) as JCheckBox).isSelected
+            verboseSetting = (settings.getComponent(VERBOSE_INDEX) as JCheckBox).isSelected
+        }
+
         if (logName.isBlank() || text.isBlank()) return text
 
         val mappingFile = File(logName).also {
             if (it.exists().not()) {
-                ErrorDialog(project, it.name).show()
+                ErrorDialog(project,bundle, it.name).show()
                 return@unscramble null
             }
         }
@@ -51,16 +66,30 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JComponent> {
         return LineNumberReader(StringReader(text)).use { reader ->
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
-                ReTrace(mappingFile).retrace(reader, writer)
+                ReTrace(ReTrace.REGULAR_EXPRESSION, allClassNamesSetting, verboseSetting, mappingFile).retrace(
+                    reader,
+                    writer
+                )
                 buffer.readUtf8()
             }
         }
     }
+
+    override fun createSettingsComponent(): JPanel {
+        return JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+            add(JCheckBox(bundle.getString("all_class_names_text")), ALL_CLASS_NAMES_INDEX)
+            add(JCheckBox(bundle.getString("verbose_text")), VERBOSE_INDEX)
+        }
+    }
+
+    private companion object {
+        private const val ALL_CLASS_NAMES_INDEX = 0
+        private const val VERBOSE_INDEX = 1
+    }
 }
 
-class ErrorDialog(project: Project, private val fileName: String) : DialogWrapper(project, false) {
-    private val bundle = ResourceBundle.getBundle("Bundle")
-
+class ErrorDialog(project: Project, private val bundle: ResourceBundle, private val fileName: String) : DialogWrapper(project, false) {
     init {
         init()
     }

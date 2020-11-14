@@ -42,7 +42,7 @@ class ProguardRetraceUnscramblerShould {
     }
 
     @Test
-    fun `deobfuscate stacktrace`() {
+    fun `de-obfuscate stacktrace`() {
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
         val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, null)
         assertThat(result, `is`(classLoader.getResource("deobfuscated.txt")?.readText()))
