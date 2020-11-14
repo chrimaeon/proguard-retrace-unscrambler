@@ -17,7 +17,7 @@
 <idea-plugin>
     <id>com.cmgapps.intellij.proguard-retrace-unscambler</id>
     <name>Proguard Retrace Unscrambler</name>
-    <vendor email="support@cmgapps.com" url="http://www.cmgapps.com">CMG Mobile Apps</vendor>
+    <vendor email="support@cmgapps.com" url="https://www.cmgapps.com">CMG Mobile Apps</vendor>
     <idea-version since-build="181.4203"/>
 
     <description><![CDATA[Adds Unscrambler support for Proguard's mapping files and Android's R8 mapping files.
