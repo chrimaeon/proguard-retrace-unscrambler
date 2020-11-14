@@ -129,21 +129,20 @@ tasks {
     patchPluginXml {
         val notes = createHTML(prettyPrint = false).p {
             b {
+                +"1.1.0"
+            }
+            ul {
+                li {
+                    +"Show dialog if mapping file cannot be found"
+                }
+            }
+            br
+            b {
                 +"1.0.0"
             }
             ul {
                 li {
                     +"First Release"
-                }
-            }
-            br
-            b {
-                +"1.1.0"
-            }
-
-            ul {
-                li {
-                    +"Show dialog if mapping file cannot be found"
                 }
             }
         }
