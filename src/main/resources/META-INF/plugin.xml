@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Copyright (c) 2020. Christian Grach <christian.grach@cmgapps.com>
   ~
@@ -13,7 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <idea-plugin>
     <id>com.cmgapps.intellij.proguard-retrace-unscambler</id>
     <name>Proguard Retrace Unscrambler</name>
