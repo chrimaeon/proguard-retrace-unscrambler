@@ -16,6 +16,7 @@
 
 import kotlinx.html.b
 import kotlinx.html.br
+import kotlinx.html.em
 import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.stream.createHTML
@@ -129,6 +130,22 @@ tasks {
     patchPluginXml {
         val notes = createHTML(prettyPrint = false).p {
             b {
+                +"1.2.0"
+            }
+            ul {
+                li {
+                    +"Change to "
+                    em {
+                        +"guardsquare"
+                    }
+                    +" coordinates"
+                }
+                li {
+                    +"Add plugin icon"
+                }
+            }
+            br
+            b {
                 +"1.1.0"
             }
             ul {
@@ -160,4 +177,8 @@ tasks {
         }
     }
     // endregion
+
+    check {
+        dependsOn(verifyPlugin)
+    }
 }
