@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 [![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/v/15267-proguard-retrace-unscrambler?style=for-the-badge)][3]
 
-This is an [IntelliJ IDEA][1] and [Android Studio][2] Plugin to deobfuscate your stacktraces.
+This is an [IntelliJ IDEA][1] and [Android Studio][2] Plugin to de-obfuscate your stacktraces.
 
 ## Installation
 
@@ -18,8 +18,12 @@ Download it from the Plugin Marketplace: [Proguard Retrace Unscrambler][3]
 
 In IntelliJ IDEA or Android Studio
 
-* Go to Analyze -> Stack Trace
-* In the dialog select `Proguard Retrace` and add the path to the Proguard/R8 mapping file
+* Go to _Analyze_
+* Select _Analyze Stacktrace…_
+* Check _Unscramble stacktrace_
+* Select _Proguard Retrace_
+* Choose Proguard/R8 mapping file in _Log file_
+* Paste stacktrace and Press _OK_
 
 ## License
 
