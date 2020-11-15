@@ -35,7 +35,7 @@ repositories {
     mavenCentral()
 }
 
-val ktlint by configurations.creating
+val ktlint: Configuration by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
@@ -125,7 +125,7 @@ tasks {
         }.toHTML()
         changeNotes(notes)
         doLast {
-            logger.info("Patch Notes: $notes")
+            logger.info("Change Notes: $notes")
         }
     }
 
