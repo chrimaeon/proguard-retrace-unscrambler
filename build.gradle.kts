@@ -28,7 +28,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.2.0"
+version = "1.3.0"
 
 repositories {
     jcenter()
