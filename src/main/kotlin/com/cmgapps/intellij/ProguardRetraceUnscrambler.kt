@@ -16,6 +16,7 @@
 
 package com.cmgapps.intellij
 
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
@@ -24,6 +25,7 @@ import okio.Buffer
 import proguard.retrace.ReTrace
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.awt.event.ItemEvent
 import java.io.File
 import java.io.LineNumberReader
 import java.io.PrintWriter
@@ -39,9 +41,19 @@ import javax.swing.SwingConstants
 
 class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     private val bundle = ResourceBundle.getBundle("Bundle")
+    private val properties = PropertiesComponent.getInstance()
+
     override fun getPresentableName() = "Proguard Retrace"
 
     override fun unscramble(project: Project, text: String, logName: String, settings: JPanel?): String? {
+        if (logName.isBlank() || text.isBlank()) return text
+
+        val mappingFile = File(logName).also {
+            if (it.exists().not()) {
+                ErrorDialog(project, bundle, it.name).show()
+                return@unscramble null
+            }
+        }
 
         val allClassNamesSetting: Boolean
         val verboseSetting: Boolean
@@ -52,15 +64,6 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         } else {
             allClassNamesSetting = (settings.getComponent(ALL_CLASS_NAMES_INDEX) as JCheckBox).isSelected
             verboseSetting = (settings.getComponent(VERBOSE_INDEX) as JCheckBox).isSelected
-        }
-
-        if (logName.isBlank() || text.isBlank()) return text
-
-        val mappingFile = File(logName).also {
-            if (it.exists().not()) {
-                ErrorDialog(project,bundle, it.name).show()
-                return@unscramble null
-            }
         }
 
         return LineNumberReader(StringReader(text)).use { reader ->
@@ -75,21 +78,40 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         }
     }
 
-    override fun createSettingsComponent(): JPanel {
-        return JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            add(JCheckBox(bundle.getString("all_class_names_text")), ALL_CLASS_NAMES_INDEX)
-            add(JCheckBox(bundle.getString("verbose_text")), VERBOSE_INDEX)
+    override fun createSettingsComponent() = JPanel().apply {
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+        JCheckBox(bundle.getString("all_class_names_text")).apply {
+            isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
+            addItemListener {
+                properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            }
+        }.let {
+            add(it, ALL_CLASS_NAMES_INDEX)
+        }
+
+        JCheckBox(bundle.getString("verbose_text")).apply {
+            isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
+            addItemListener {
+                properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            }
+        }.let {
+            add(it, VERBOSE_INDEX)
         }
     }
 
     private companion object {
         private const val ALL_CLASS_NAMES_INDEX = 0
         private const val VERBOSE_INDEX = 1
+        private const val PROPERTIES_PREFIX = "com.cmgapps.intellij.proguard-retrace-unscambler"
+        private const val ALL_CLASS_NAMES_PROPERTY = "$PROPERTIES_PREFIX.all-class-names"
+        private const val VERBOSE_PROPERTY = "$PROPERTIES_PREFIX.verbose"
     }
 }
 
-class ErrorDialog(project: Project, private val bundle: ResourceBundle, private val fileName: String) : DialogWrapper(project, false) {
+class ErrorDialog(project: Project, private val bundle: ResourceBundle, private val fileName: String) :
+    DialogWrapper(project, false) {
+
     init {
         init()
     }

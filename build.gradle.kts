@@ -112,6 +112,7 @@ tasks {
 
     check {
         dependsOn(ktlint)
+        dependsOn(verifyPlugin)
     }
 
     dependencyUpdates {

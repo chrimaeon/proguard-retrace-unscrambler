@@ -1,4 +1,4 @@
-at.cmg.android.phonews.ui.aj: Error with code: 0x123
+at.cmg.android.phonews.ui.PhoNewsActivity$AcraSilentExeption: Error with code: 0x123
 	at at.cmg.android.phonews.ui.BaseListFragment.getTrackerTag(BaseListFragment.java:588)
 	at at.cmg.android.phonews.ui.PhoNewsActivity.onCreate(PhoNewsActivity.java:124)
 	at android.app.Activity.performCreate(Activity.java:7955)
