@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2020. Christian Grach <christian.grach@cmgapps.com>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+     width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+    <path fill="none" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="10"
+          d="M31.19,27H8.81C7.26,27,6,25.74,6,24.18V7.81C6,6.26,7.26,5,8.81,5h22.37C32.74,5,34,6.26,34,7.81v16.37C34,25.74,32.74,27,31.19,27z"/>
+    <line fill="none" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="10" x1="18.14" y1="29" x2="18.14" y2="33"/>
+    <line fill="none" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="10" x1="22.14" y1="29" x2="22.14" y2="33"/>
+    <line fill="none" stroke="#FFFFFF" stroke-width="2" stroke-miterlimit="10" x1="12.64" y1="35" x2="27.64" y2="35"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="24.14" y1="9.5" x2="24.14" y2="22.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="26.64" y1="9.5" x2="26.64" y2="22.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="13.14" y1="9.5" x2="13.14" y2="22.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="21.64" y1="9.5" x2="21.64" y2="22.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="12.89" y1="10" x2="21.39" y2="10"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="13.29" y1="22.15" x2="15.53" y2="19.91"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="16.58" y1="21.67" x2="14.83" y2="19.91"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="18.17" y1="21.71" x2="19.96" y2="19.9"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="21.49" y1="22.14" x2="19.26" y2="19.91"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="15.94" y1="21.73" x2="17.77" y2="19.9"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="18.76" y1="21.6" x2="17.07" y2="19.91"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="15.64" y1="12.5" x2="16.64" y2="12.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="15.64" y1="15" x2="16.64" y2="15"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="17.89" y1="15" x2="20.39" y2="15"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="17.89" y1="12.5" x2="20.39" y2="12.5"/>
+    <line fill="none" stroke="#FFFFFF" stroke-miterlimit="10" x1="15.64" y1="17.5" x2="18.14" y2="17.5"/>
+</svg>
