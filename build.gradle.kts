@@ -178,8 +178,4 @@ tasks {
         }
     }
     // endregion
-
-    check {
-        dependsOn(verifyPlugin)
-    }
 }
