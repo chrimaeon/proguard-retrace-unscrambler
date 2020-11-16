@@ -15,6 +15,7 @@
  */
 
 object Deps {
+    const val changelogPluginVersion = "0.6.2"
     const val depUpdatesPluginVersion = "0.36.0"
     const val hamcrestVersion = "2.2"
     const val intellijVersion = "0.6.3"

@@ -17,47 +17,143 @@
 package com.cmgapps.indellij
 
 import com.cmgapps.intellij.ProguardRetraceUnscrambler
-import com.intellij.openapi.project.Project
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import javax.swing.JCheckBox
+import javax.swing.JPanel
 
 @ExtendWith(MockitoExtension::class)
-class ProguardRetraceUnscramblerShould {
-
-    @Mock
-    lateinit var project: Project
+class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     private lateinit var mappingFilePath: String
+
+    private lateinit var settings: JPanel
 
     private val classLoader = javaClass.classLoader
 
     @BeforeEach
-    fun setup() {
+    fun beforeEach() {
+        setUp()
         mappingFilePath = classLoader.getResource("mapping.txt")?.path ?: error("mapping.txt not found")
+        settings = JPanel()
+    }
+
+    @AfterEach
+    fun afterEach() {
+        tearDown()
     }
 
     @Test
-    fun `deobfuscate stacktrace`() {
+    fun `de-obfuscate stacktrace`() {
+        settings.apply {
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                0
+            )
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                1
+            )
+        }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
-        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, null)
+
+        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+
         assertThat(result, `is`(classLoader.getResource("deobfuscated.txt")?.readText()))
     }
 
     @Test
     fun `return empty text when stacktrace is empty`() {
-        val result = ProguardRetraceUnscrambler().unscramble(project, "", mappingFilePath, null)
+        val result = ProguardRetraceUnscrambler().unscramble(project, "", mappingFilePath, settings)
         assertThat(result, `is`(""))
+    }
+
+    @Test
+    fun `de-obfuscate allClassNames stacktrace`() {
+        settings.apply {
+
+            add(
+                JCheckBox().also {
+                    it.isSelected = true
+                },
+                0
+            )
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                1
+            )
+        }
+        val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
+
+        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+
+        assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames.txt")?.readText()))
+    }
+
+    @Test
+    fun `de-obfuscate verbose stacktrace`() {
+        settings.apply {
+
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                0
+            )
+            add(
+                JCheckBox().also {
+                    it.isSelected = true
+                },
+                1
+            )
+        }
+        val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
+
+        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+
+        assertThat(result, `is`(classLoader.getResource("deobfuscated-verbose.txt")?.readText()))
+    }
+
+    @Test
+    fun `de-obfuscate allClassNames and verbose stacktrace`() {
+        settings.apply {
+
+            add(
+                JCheckBox().also {
+                    it.isSelected = true
+                },
+                0
+            )
+            add(
+                JCheckBox().also {
+                    it.isSelected = true
+                },
+                1
+            )
+        }
+        val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
+
+        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+
+        assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames-verbose.txt")?.readText()))
     }
 
     // TODO create integration test
     // @Test
     // fun `show dialog when mapping file does not exist`() {
-    //     val result = ProguardRetraceUnscrambler().unscramble(project, "stacktrace", "path/to/nowhere", null)
+    //     val result = ProguardRetraceUnscrambler().unscramble(project, "stacktrace", "path/to/nowhere", settings)
     //     assertThat(result, nullValue())
     // }
 }

@@ -14,39 +14,28 @@
  * limitations under the License.
  */
 
-import kotlinx.html.b
-import kotlinx.html.br
-import kotlinx.html.em
-import kotlinx.html.li
-import kotlinx.html.p
-import kotlinx.html.stream.createHTML
-import kotlinx.html.ul
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.util.Date
-
-buildscript {
-    dependencies {
-        classpath("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
-    }
-}
 
 plugins {
     java
     id("org.jetbrains.intellij") version Deps.intellijVersion
+    id("org.jetbrains.changelog") version Deps.changelogPluginVersion
     kotlin("jvm") version Deps.kotlinVersion
     id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
 }
 
 group = "com.cmgapps.intellij"
-version = "1.2.0"
+version = "1.3.0"
 
 repositories {
     jcenter()
     mavenCentral()
 }
 
-val ktlint by configurations.creating
+val ktlint: Configuration by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
@@ -113,6 +102,7 @@ tasks {
 
     check {
         dependsOn(ktlint)
+        dependsOn(verifyPlugin)
     }
 
     dependencyUpdates {
@@ -128,45 +118,14 @@ tasks {
 
     // region IntelliJ Plugin
     patchPluginXml {
-        val notes = createHTML(prettyPrint = false).p {
-            b {
-                +"1.2.0"
-            }
-            ul {
-                li {
-                    +"Change to "
-                    em {
-                        +"guardsquare"
-                    }
-                    +" coordinates"
-                }
-                li {
-                    +"Add plugin icon"
-                }
-            }
-            br
-            b {
-                +"1.1.0"
-            }
-            ul {
-                li {
-                    +"Show dialog if mapping file cannot be found"
-                }
-            }
-            br
-            b {
-                +"1.0.0"
-            }
-            ul {
-                li {
-                    +"First Release"
-                }
-            }
-        }
-
+        val notes = if (changelog.has(project.version.cast())) {
+            changelog.get(project.version.cast())
+        } else {
+            changelog.getUnreleased()
+        }.toHTML()
         changeNotes(notes)
         doLast {
-            logger.info("Patch Notes: $notes")
+            logger.info("Change Notes: $notes")
         }
     }
 
@@ -177,8 +136,4 @@ tasks {
         }
     }
     // endregion
-
-    check {
-        dependsOn(verifyPlugin)
-    }
 }

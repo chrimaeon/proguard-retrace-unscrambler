@@ -21,7 +21,7 @@
     <idea-version since-build="181.4203"/>
 
     <description><![CDATA[Adds Unscrambler support for Proguard's mapping files and Android's R8 mapping files.
-    Use to deobfuscate your stacktrace]]></description>
+    Use to de-obfuscate your stacktrace]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
