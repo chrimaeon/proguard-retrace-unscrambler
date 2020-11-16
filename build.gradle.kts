@@ -28,14 +28,14 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.2.0"
+version = "1.3.0"
 
 repositories {
     jcenter()
     mavenCentral()
 }
 
-val ktlint by configurations.creating
+val ktlint: Configuration by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
@@ -125,7 +125,7 @@ tasks {
         }.toHTML()
         changeNotes(notes)
         doLast {
-            logger.info("Patch Notes: $notes")
+            logger.info("Change Notes: $notes")
         }
     }
 
