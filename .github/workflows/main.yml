@@ -41,7 +41,7 @@ jobs:
       - name: Download dependencies
         run: ./gradlew dependencies
       - name: Test
-        run: ./gradlew check
+        run: ./gradlew check koverHtmlReport koverVerify
       - name: Archive Test results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
