@@ -16,12 +16,11 @@
 
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.util.Date
 
 plugins {
     java
-    id("org.jetbrains.intellij") version Deps.intellijVersion
+    id("org.jetbrains.intellij") version Deps.intellijPluginVersion
     id("org.jetbrains.changelog") version Deps.changelogPluginVersion
     kotlin("jvm") version Deps.kotlinVersion
     id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
@@ -31,7 +30,6 @@ group = "com.cmgapps.intellij"
 version = "1.3.0"
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -52,15 +50,15 @@ dependencies {
 }
 
 intellij {
-    version = "2020.2"
-    updateSinceUntilBuild = false
-    setPlugins("java")
+    version.set("2021.3")
+    updateSinceUntilBuild.set(false)
+    plugins.set(listOf("java"))
 }
 
 tasks {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL
-        gradleVersion = "6.7"
+        gradleVersion = "7.3.3"
     }
 
     withType<KotlinCompile> {
@@ -95,9 +93,13 @@ tasks {
     val ktlint by registering(JavaExec::class) {
         group = "Verification"
         description = "Check Kotlin code style."
-        main = "com.pinterest.ktlint.Main"
+        mainClass.set("com.pinterest.ktlint.Main")
         classpath = ktlint
-        args = listOf("src/**/*.kt", "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/reports/ktlint.xml")
+        args = listOf(
+            "src/**/*.kt",
+            "--reporter=plain",
+            "--reporter=checkstyle,output=${buildDir}/reports/ktlint.xml"
+        )
     }
 
     check {
@@ -118,21 +120,21 @@ tasks {
 
     // region IntelliJ Plugin
     patchPluginXml {
-        val notes = if (changelog.has(project.version.cast())) {
-            changelog.get(project.version.cast())
-        } else {
-            changelog.getUnreleased()
-        }.toHTML()
-        changeNotes(notes)
-        doLast {
-            logger.info("Change Notes: $notes")
-        }
+        changeNotes.set(
+            provider {
+                if (changelog.has(project.version as String)) {
+                    changelog.get(project.version as String)
+                } else {
+                    changelog.getUnreleased()
+                }.toHTML()
+            }
+        )
     }
 
     publishPlugin {
         // TODO read token from env if on CI
         if (System.getenv("CI") == null) {
-            token(project.property("intellij.token"))
+            token.set(project.property("intellij.token") as String)
         }
     }
     // endregion
