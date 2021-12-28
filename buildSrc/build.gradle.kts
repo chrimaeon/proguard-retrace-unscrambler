@@ -19,5 +19,16 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
+}
+
+tasks {
+    withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    }
+
+    withType(JavaCompile::class) {
+        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
+        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    }
 }

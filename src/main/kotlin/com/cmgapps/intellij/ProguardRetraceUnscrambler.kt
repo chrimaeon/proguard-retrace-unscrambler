@@ -102,7 +102,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     }
 }
 
-class ErrorDialog(project: Project, private val bundle: ResourceBundle, private val fileName: String) :
+class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private val fileName: String) :
     DialogWrapper(project, false) {
 
     init {

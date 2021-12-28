@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
@@ -24,6 +25,7 @@ plugins {
     id("org.jetbrains.changelog") version Deps.changelogPluginVersion
     kotlin("jvm") version Deps.kotlinVersion
     id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
+    id("org.jetbrains.kotlinx.kover") version Deps.koverPluginVersion
 }
 
 group = "com.cmgapps.intellij"
@@ -72,6 +74,9 @@ tasks {
         testLogging {
             events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
         }
+        extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+            excludes = listOf("com.cmgapps.intellij.ErrorDialog")
+        }
     }
 
     jar {
@@ -98,7 +103,7 @@ tasks {
         args = listOf(
             "src/**/*.kt",
             "--reporter=plain",
-            "--reporter=checkstyle,output=${buildDir}/reports/ktlint.xml"
+            "--reporter=checkstyle,output=$buildDir/reports/ktlint.xml"
         )
     }
 
@@ -114,6 +119,16 @@ tasks {
             listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
                 """(?i).*[.-]?$qualifier[.\d-]*""".toRegex()
                     .containsMatchIn(candidate.version)
+            }
+        }
+    }
+
+    koverVerify {
+        rule {
+            name = "Minimal line coverage rate in percent"
+            bound {
+                minValue = 80
+                valueType = COVERED_LINES_PERCENTAGE
             }
         }
     }
