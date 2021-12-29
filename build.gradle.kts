@@ -152,5 +152,16 @@ tasks {
             token.set(project.property("intellij.token") as String)
         }
     }
+
+    runPluginVerifier {
+        ideVersions.addAll(
+            "IC-2018.1.8",
+            "IC-2019.1.4",
+            "IC-2020.1.4",
+            "IC-2021.1.3",
+            "IC-2021.2.4",
+            "IC-2021.3.1",
+        )
+    }
     // endregion
 }
