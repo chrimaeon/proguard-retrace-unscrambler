@@ -29,7 +29,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.3.0"
+version = "1.4.0"
 
 repositories {
     mavenCentral()
@@ -54,7 +54,7 @@ dependencies {
 intellij {
     version.set("2021.3")
     updateSinceUntilBuild.set(false)
-    plugins.set(listOf("java"))
+    plugins.add("java")
 }
 
 tasks {
