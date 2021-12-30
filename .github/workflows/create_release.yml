@@ -1,0 +1,23 @@
+name: Create Github Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+jobs:
+  create-github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Release Notes
+        id: release_notes
+        run: |
+          RELEASE_NOTES=`./gradlew --quiet getChangelog --no-header`
+          echo '::set-output name=release_notes::$RELEASE_NOTES'
+      - name: Create Release
+        uses: chrimaeon/github-create-release-action@0.1.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: ${{ github.ref }}
+          description: ${{ steps.release_notes.outputs.release_notes }}
