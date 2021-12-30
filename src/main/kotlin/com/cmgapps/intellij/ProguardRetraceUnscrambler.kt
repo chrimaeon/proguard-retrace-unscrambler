@@ -48,23 +48,16 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     override fun unscramble(project: Project, text: String, logName: String, settings: JPanel?): String? {
         if (logName.isBlank() || text.isBlank()) return text
 
-        val mappingFile = File(logName).also {
-            if (it.exists().not()) {
-                ErrorDialog(project, bundle, it.name).show()
-                return@unscramble null
-            }
+        val mappingFile = File(logName)
+
+        if (!mappingFile.exists()) {
+            ErrorDialog(project, bundle, mappingFile.name).show()
+            return null
         }
 
-        val allClassNamesSetting: Boolean
-        val verboseSetting: Boolean
-
-        if (settings == null) {
-            allClassNamesSetting = false
-            verboseSetting = false
-        } else {
-            allClassNamesSetting = (settings.getComponent(ALL_CLASS_NAMES_INDEX) as JCheckBox).isSelected
-            verboseSetting = (settings.getComponent(VERBOSE_INDEX) as JCheckBox).isSelected
-        }
+        val allClassNamesSetting: Boolean =
+            (settings?.getComponent(ALL_CLASS_NAMES_INDEX) as? JCheckBox)?.isSelected ?: false
+        val verboseSetting: Boolean = (settings?.getComponent(VERBOSE_INDEX) as? JCheckBox)?.isSelected ?: false
 
         return LineNumberReader(StringReader(text)).use { reader ->
             val buffer = Buffer()
@@ -109,7 +102,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     }
 }
 
-class ErrorDialog(project: Project, private val bundle: ResourceBundle, private val fileName: String) :
+class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private val fileName: String) :
     DialogWrapper(project, false) {
 
     init {
@@ -118,7 +111,7 @@ class ErrorDialog(project: Project, private val bundle: ResourceBundle, private 
 
     override fun createActions(): Array<Action> = arrayOf(okAction)
 
-    override fun createCenterPanel(): JComponent? = JPanel(BorderLayout()).apply {
+    override fun createCenterPanel(): JComponent = JPanel(BorderLayout()).apply {
         JLabel(
             bundle.getString("error_text").format(fileName),
             Messages.getWarningIcon(),

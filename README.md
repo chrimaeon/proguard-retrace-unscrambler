@@ -25,6 +25,8 @@ In IntelliJ IDEA or Android Studio
 * Choose Proguard/R8 mapping file in _Log file_
 * Paste stacktrace and Press _OK_
 
+![Screenshot](art/screenshot.png)
+
 ## License
 
 ```text

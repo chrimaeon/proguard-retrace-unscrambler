@@ -19,12 +19,16 @@ package com.cmgapps.indellij
 import com.cmgapps.intellij.ProguardRetraceUnscrambler
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.isA
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import javax.swing.BoxLayout
 import javax.swing.JCheckBox
 import javax.swing.JPanel
 
@@ -148,6 +152,36 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
 
         assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames-verbose.txt")?.readText()))
+    }
+
+    @Nested
+    inner class UiRelated {
+
+        @Test
+        fun `create settings panel with box layout`() {
+            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
+            assertThat(settingsComponent.layout, isA(BoxLayout::class.java))
+        }
+
+        @Test
+        fun `create settings panel with 2 items`() {
+            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
+            assertThat(settingsComponent.componentCount, `is`(2))
+        }
+
+        @Test
+        fun `create settings panel with checkboxes`() {
+            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
+            assertThat(
+                settingsComponent.components.toList(),
+                hasItems(isA(JCheckBox::class.java))
+            )
+        }
+
+        @Test
+        fun `return display name`() {
+            assertThat(ProguardRetraceUnscrambler().presentableName, `is`("Proguard Retrace"))
+        }
     }
 
     // TODO create integration test

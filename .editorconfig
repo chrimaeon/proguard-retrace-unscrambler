@@ -6,4 +6,4 @@ indent_style = space
 
 [*.{kt, kts}]
 indent_size = 4
-kotlin_imports_layout=idea
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^

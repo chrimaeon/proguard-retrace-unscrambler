@@ -15,14 +15,15 @@
  */
 
 object Deps {
-    const val changelogPluginVersion = "0.6.2"
-    const val depUpdatesPluginVersion = "0.36.0"
+    const val changelogPluginVersion = "1.3.1"
+    const val depUpdatesPluginVersion = "0.39.0"
     const val hamcrestVersion = "2.2"
-    const val intellijVersion = "0.6.3"
-    const val junitVersion = "5.7.0"
-    const val kotlinVersion = "1.4.10"
-    const val ktlintVersion = "0.39.0"
-    const val mockitoVersion = "3.6.0"
-    const val okioVersion = "2.9.0"
-    const val retraceVersion = "7.0.1"
+    const val intellijPluginVersion = "1.3.0"
+    const val junitVersion = "5.8.2"
+    const val kotlinVersion = "1.6.10"
+    const val koverPluginVersion = "0.4.4"
+    const val ktlintVersion = "0.43.2"
+    const val mockitoVersion = "4.2.0"
+    const val okioVersion = "3.0.0"
+    const val retraceVersion = "7.1.1"
 }
