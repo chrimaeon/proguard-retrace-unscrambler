@@ -1,4 +1,4 @@
-# Proguard Retrace Unscrambler [![CircleCI](https://circleci.com/gh/chrimaeon/proguard-retrace-unscrambler.svg?style=svg)](https://circleci.com/gh/chrimaeon/proguard-retrace-unscrambler)
+# Proguard Retrace Unscrambler [![Build & Test & Verify](https://github.com/chrimaeon/proguard-retrace-unscrambler/actions/workflows/main.yml/badge.svg)](https://github.com/chrimaeon/proguard-retrace-unscrambler/actions/workflows/main.yml)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 [![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/v/15267-proguard-retrace-unscrambler?style=for-the-badge)][3]
