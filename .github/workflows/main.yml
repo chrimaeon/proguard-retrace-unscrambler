@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build & Test & Verify
 on:
   push:
     branches:
@@ -40,8 +40,13 @@ jobs:
 
       - name: Download dependencies
         run: ./gradlew dependencies
-      - name: Test
+
+      - name: Build & Test
         run: ./gradlew check koverHtmlReport koverVerify
+
+      - name: Run Plugin Verifier
+        run: ./gradlew runPluginVerifier
+
       - name: Archive Test results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v2
@@ -50,3 +55,4 @@ jobs:
           path: |
             build/reports/*
             build/test-results/*
+      
