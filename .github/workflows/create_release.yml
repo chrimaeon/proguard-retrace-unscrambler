@@ -14,10 +14,9 @@ jobs:
       - name: Create Release Notes
         run: ./gradlew --quiet getChangelog --no-header > ./RELEASE_NOTES.md
       - name: Create Release
-        uses: chrimaeon/github-create-release-action@0.2.0
+        uses: chrimaeon/github-create-release-action@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           tag_name: ${{ github.ref }}
           body_file: ./RELEASE_NOTES.md
-          draft: false
