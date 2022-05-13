@@ -4,8 +4,20 @@
 ### Added
 
 ### Changed
-- Update Retrace to version 7.2.1
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.5.0]
+### Added
+
+### Changed
+- Update Retrace to version 7.2.1
 
 ### Deprecated
 
@@ -16,18 +28,8 @@
 ### Security
 
 ## [1.4.0]
-### Added
-
 ### Changed
 - Update Retrace to version 7.1.1
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## [1.3.0]
 ### Added
