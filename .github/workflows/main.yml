@@ -16,15 +16,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: 11
+          distribution: zulu
 
       - name: Gradle Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches/modules-*
@@ -33,7 +34,7 @@ jobs:
           key: gradle-${{ hashFiles('**/build.gradle.kts', '**/Deps.kt') }}
 
       - name: Gradle Wrapper Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
@@ -42,14 +43,14 @@ jobs:
         run: ./gradlew dependencies
 
       - name: Build & Test
-        run: ./gradlew check koverHtmlReport koverVerify
+        run: ./gradlew check
 
       - name: Run Plugin Verifier
         run: ./gradlew runPluginVerifier
 
       - name: Archive Test results
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: |
