@@ -62,7 +62,13 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         return LineNumberReader(StringReader(text)).use { reader ->
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
-                ReTrace(ReTrace.REGULAR_EXPRESSION, allClassNamesSetting, verboseSetting, mappingFile).retrace(
+                ReTrace(
+                    ReTrace.REGULAR_EXPRESSION,
+                    ReTrace.REGULAR_EXPRESSION2,
+                    allClassNamesSetting,
+                    verboseSetting,
+                    mappingFile
+                ).retrace(
                     reader,
                     writer
                 )

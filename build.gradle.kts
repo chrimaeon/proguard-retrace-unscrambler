@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -21,11 +22,11 @@ import java.util.Date
 
 plugins {
     java
-    id("org.jetbrains.intellij") version Deps.intellijPluginVersion
-    id("org.jetbrains.changelog") version Deps.changelogPluginVersion
-    kotlin("jvm") version Deps.kotlinVersion
-    id("com.github.ben-manes.versions") version Deps.depUpdatesPluginVersion
-    id("org.jetbrains.kotlinx.kover") version Deps.koverPluginVersion
+    alias(libs.plugins.intellij)
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.depUpdates)
+    alias(libs.plugins.kover)
 }
 
 group = "com.cmgapps.intellij"
@@ -37,35 +38,26 @@ repositories {
 
 val ktlint: Configuration by configurations.creating
 
-dependencies {
-    implementation(kotlin("stdlib-jdk8", Deps.kotlinVersion))
-    implementation("com.guardsquare:proguard-retrace:" + Deps.retraceVersion)
-    implementation("com.squareup.okio:okio:" + Deps.okioVersion)
-
-    ktlint("com.pinterest:ktlint:" + Deps.ktlintVersion)
-
-    "testImplementation"(platform("org.junit:junit-bom:" + Deps.junitVersion))
-    "testImplementation"("org.junit.jupiter:junit-jupiter")
-    "testImplementation"("org.hamcrest:hamcrest-library:" + Deps.hamcrestVersion)
-    "testImplementation"("org.mockito:mockito-core:" + Deps.mockitoVersion)
-    "testImplementation"("org.mockito:mockito-junit-jupiter:" + Deps.mockitoVersion)
-}
-
 intellij {
-    version.set("2021.3")
+    version.set("2022.1")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL
-        gradleVersion = "7.3.3"
+        gradleVersion = libs.versions.gradle.get()
     }
 
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
         }
     }
 
@@ -73,9 +65,6 @@ tasks {
         useJUnitPlatform()
         testLogging {
             events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
-        }
-        extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-            excludes = listOf("com.cmgapps.intellij.ErrorDialog")
         }
     }
 
@@ -89,7 +78,7 @@ tasks {
                     "Built-Date" to Date(),
                     "Built-JDK" to System.getProperty("java.version"),
                     "Built-Gradle" to gradle.gradleVersion,
-                    "Built-Kotlin" to Deps.kotlinVersion
+                    "Built-Kotlin" to libs.versions.kotlin.get()
                 )
             )
         }
@@ -114,6 +103,7 @@ tasks {
 
     dependencyUpdates {
         revision = "release"
+        gradleReleaseChannel = GradleReleaseChannel.CURRENT.id
 
         rejectVersionIf {
             listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
@@ -123,7 +113,13 @@ tasks {
         }
     }
 
-    koverVerify {
+    koverMergedHtmlReport {
+        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
+    }
+
+    koverMergedVerify {
+        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
+
         rule {
             name = "Minimal line coverage rate in percent"
             bound {
@@ -159,9 +155,21 @@ tasks {
             "IC-2019.1.4",
             "IC-2020.1.4",
             "IC-2021.1.3",
-            "IC-2021.2.4",
-            "IC-2021.3.1",
+            "IC-2022.1.1",
         )
     }
     // endregion
+}
+
+dependencies {
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.proguard.retrace)
+    implementation(libs.okio)
+
+    ktlint(libs.ktlint)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(libs.hamcrest)
+    testImplementation(libs.bundles.mockito)
 }

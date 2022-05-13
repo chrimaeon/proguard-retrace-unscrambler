@@ -4,6 +4,8 @@
 ### Added
 
 ### Changed
+- Update Retrace to version 7.2.1
+
 
 ### Deprecated
 
