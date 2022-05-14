@@ -64,7 +64,7 @@ tasks {
     test {
         useJUnitPlatform()
         testLogging {
-            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+            events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
         }
     }
 
