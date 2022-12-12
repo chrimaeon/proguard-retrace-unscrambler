@@ -85,7 +85,6 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Test
     fun `de-obfuscate allClassNames stacktrace`() {
         settings.apply {
-
             add(
                 JCheckBox().also {
                     it.isSelected = true
@@ -109,7 +108,6 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Test
     fun `de-obfuscate verbose stacktrace`() {
         settings.apply {
-
             add(
                 JCheckBox().also {
                     it.isSelected = false
@@ -133,7 +131,6 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Test
     fun `de-obfuscate allClassNames and verbose stacktrace`() {
         settings.apply {
-
             add(
                 JCheckBox().also {
                     it.isSelected = true

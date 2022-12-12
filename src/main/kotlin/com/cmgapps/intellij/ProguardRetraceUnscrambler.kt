@@ -29,7 +29,6 @@ import java.awt.event.ItemEvent
 import java.io.File
 import java.io.LineNumberReader
 import java.io.PrintWriter
-import java.io.StringReader
 import java.util.ResourceBundle
 import javax.swing.Action
 import javax.swing.BoxLayout
@@ -59,7 +58,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
             (settings?.getComponent(ALL_CLASS_NAMES_INDEX) as? JCheckBox)?.isSelected ?: false
         val verboseSetting: Boolean = (settings?.getComponent(VERBOSE_INDEX) as? JCheckBox)?.isSelected ?: false
 
-        return LineNumberReader(StringReader(text)).use { reader ->
+        return LineNumberReader(text.reader().buffered()).use { reader ->
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
                 ReTrace(

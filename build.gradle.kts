@@ -15,22 +15,29 @@
  */
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
-import kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE
+import kotlinx.kover.api.CounterType
+import kotlinx.kover.api.VerificationValueType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
 
 plugins {
     java
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.changelog)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kotlin.jvm)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.depUpdates)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
 }
 
 group = "com.cmgapps.intellij"
-version = "1.5.0"
+version = "1.6.0"
 
 repositories {
     mavenCentral()
@@ -39,7 +46,7 @@ repositories {
 val ktlint: Configuration by configurations.creating
 
 intellij {
-    version.set("2022.1")
+    version.set("2022.3")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
 }
@@ -47,6 +54,37 @@ intellij {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kover {
+    filters {
+        classes {
+            excludes += listOf("com.cmgapps.intellij.ErrorDialog")
+        }
+    }
+    htmlReport {
+        onCheck.set(true)
+    }
+    verify {
+        onCheck.set(true)
+
+        rule {
+            name = "Minimal line coverage rate in percent"
+            bound {
+                minValue = 80
+                counter = CounterType.LINE
+                valueType = VerificationValueType.COVERED_PERCENTAGE
+            }
+        }
+    }
+}
+
+changelog {
+    header.set(
+        provider {
+            version.get()
+        }
+    )
 }
 
 tasks {
@@ -64,7 +102,7 @@ tasks {
     test {
         useJUnitPlatform()
         testLogging {
-            events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+            events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
         }
     }
 
@@ -113,31 +151,20 @@ tasks {
         }
     }
 
-    koverMergedHtmlReport {
-        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
-    }
-
-    koverMergedVerify {
-        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
-
-        rule {
-            name = "Minimal line coverage rate in percent"
-            bound {
-                minValue = 80
-                valueType = COVERED_LINES_PERCENTAGE
-            }
-        }
-    }
-
     // region IntelliJ Plugin
     patchPluginXml {
         changeNotes.set(
             provider {
-                if (changelog.has(project.version as String)) {
+                val item = if (changelog.has(project.version as String)) {
                     changelog.get(project.version as String)
                 } else {
                     changelog.getUnreleased()
-                }.toHTML()
+                }
+                changelog.renderItem(
+                    item.withHeader(false)
+                        .withEmptySections(false),
+                    Changelog.OutputType.HTML
+                )
             }
         )
     }
@@ -155,8 +182,12 @@ tasks {
             "IC-2019.1.4",
             "IC-2020.1.4",
             "IC-2021.1.3",
-            "IC-2022.1.1",
+            "IC-2022.3"
         )
+    }
+
+    buildSearchableOptions {
+        enabled = false
     }
     // endregion
 }
@@ -170,6 +201,8 @@ dependencies {
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation(libs.hamcrest)
     testImplementation(libs.bundles.mockito)
 }
