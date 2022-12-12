@@ -15,7 +15,8 @@
  */
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
-import kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE
+import kotlinx.kover.api.CounterType
+import kotlinx.kover.api.VerificationValueType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
@@ -52,6 +53,29 @@ intellij {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+kover {
+    filters {
+        classes {
+            excludes += listOf("com.cmgapps.intellij.ErrorDialog")
+        }
+    }
+    htmlReport {
+        onCheck.set(true)
+    }
+    verify {
+        onCheck.set(true)
+
+        rule {
+            name = "Minimal line coverage rate in percent"
+            bound {
+                minValue = 80
+                counter = CounterType.LINE
+                valueType = VerificationValueType.COVERED_PERCENTAGE
+            }
+        }
+    }
 }
 
 tasks {
@@ -118,22 +142,6 @@ tasks {
         }
     }
 
-    koverMergedHtmlReport {
-        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
-    }
-
-    koverMergedVerify {
-        excludes = listOf("com.cmgapps.intellij.ErrorDialog")
-
-        rule {
-            name = "Minimal line coverage rate in percent"
-            bound {
-                minValue = 80
-                valueType = COVERED_LINES_PERCENTAGE
-            }
-        }
-    }
-
     // region IntelliJ Plugin
     patchPluginXml {
         changeNotes.set(
@@ -181,7 +189,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
     testImplementation(libs.hamcrest)
     testImplementation(libs.bundles.mockito)
 }
