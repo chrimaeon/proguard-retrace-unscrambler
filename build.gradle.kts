@@ -22,10 +22,15 @@ import java.util.Date
 
 plugins {
     java
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.changelog)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kotlin.jvm)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.depUpdates)
+    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
 }
 
@@ -39,7 +44,7 @@ repositories {
 val ktlint: Configuration by configurations.creating
 
 intellij {
-    version.set("2022.1")
+    version.set("2022.3")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
 }
@@ -155,8 +160,12 @@ tasks {
             "IC-2019.1.4",
             "IC-2020.1.4",
             "IC-2021.1.3",
-            "IC-2022.1.1",
+            "IC-2022.3"
         )
+    }
+
+    buildSearchableOptions {
+        enabled = false
     }
     // endregion
 }
@@ -170,6 +179,9 @@ dependencies {
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
     testImplementation(libs.hamcrest)
     testImplementation(libs.bundles.mockito)
 }
