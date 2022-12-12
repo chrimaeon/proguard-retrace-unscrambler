@@ -37,7 +37,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.5.0"
+version = "1.6.0"
 
 repositories {
     mavenCentral()
@@ -77,6 +77,14 @@ kover {
             }
         }
     }
+}
+
+changelog {
+    header.set(
+        provider {
+            version.get()
+        }
+    )
 }
 
 tasks {
