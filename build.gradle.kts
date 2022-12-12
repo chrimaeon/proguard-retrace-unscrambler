@@ -18,6 +18,7 @@ import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import kotlinx.kover.api.CounterType
 import kotlinx.kover.api.VerificationValueType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
 
@@ -146,11 +147,16 @@ tasks {
     patchPluginXml {
         changeNotes.set(
             provider {
-                if (changelog.has(project.version as String)) {
+                val item = if (changelog.has(project.version as String)) {
                     changelog.get(project.version as String)
                 } else {
                     changelog.getUnreleased()
-                }.toHTML()
+                }
+                changelog.renderItem(
+                    item.withHeader(false)
+                        .withEmptySections(false),
+                    Changelog.OutputType.HTML
+                )
             }
         )
     }
