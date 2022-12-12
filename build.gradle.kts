@@ -79,6 +79,14 @@ kover {
     }
 }
 
+changelog {
+    header.set(
+        provider {
+            version.get()
+        }
+    )
+}
+
 tasks {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL
