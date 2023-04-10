@@ -36,7 +36,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.6.0"
+version = "1.7.0"
 
 repositories {
     mavenCentral()
