@@ -5,6 +5,8 @@
 ### Added
 
 ### Changed
+- Update Retrace to version 7.3.2
+- Minimum IntelliJ Idea Version is now **2020.1** and Android Studio Version is **Arctic Foc**
 
 ### Deprecated
 

@@ -19,7 +19,6 @@ import kotlinx.kover.api.CounterType
 import kotlinx.kover.api.VerificationValueType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Date
 
 plugins {
@@ -51,9 +50,18 @@ intellij {
     plugins.add("java")
 }
 
+val javaLanguageVersion = JavaLanguageVersion.of(8)
+
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion.set(javaLanguageVersion)
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(javaLanguageVersion)
+    }
 }
 
 kover {
@@ -83,7 +91,7 @@ changelog {
     header.set(
         provider {
             version.get()
-        }
+        },
     )
 }
 
@@ -91,12 +99,6 @@ tasks {
     wrapper {
         distributionType = Wrapper.DistributionType.ALL
         gradleVersion = libs.versions.gradle.get()
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_1_8.toString()
-        }
     }
 
     test {
@@ -116,8 +118,8 @@ tasks {
                     "Built-Date" to Date(),
                     "Built-JDK" to System.getProperty("java.version"),
                     "Built-Gradle" to gradle.gradleVersion,
-                    "Built-Kotlin" to libs.versions.kotlin.get()
-                )
+                    "Built-Kotlin" to libs.versions.kotlin.get(),
+                ),
             )
         }
     }
@@ -130,7 +132,7 @@ tasks {
         args = listOf(
             "src/**/*.kt",
             "--reporter=plain",
-            "--reporter=checkstyle,output=$buildDir/reports/ktlint.xml"
+            "--reporter=checkstyle,output=$buildDir/reports/ktlint.xml",
         )
     }
 
@@ -153,6 +155,7 @@ tasks {
 
     // region IntelliJ Plugin
     patchPluginXml {
+        sinceBuild.set("201")
         changeNotes.set(
             provider {
                 val item = if (changelog.has(project.version as String)) {
@@ -163,9 +166,9 @@ tasks {
                 changelog.renderItem(
                     item.withHeader(false)
                         .withEmptySections(false),
-                    Changelog.OutputType.HTML
+                    Changelog.OutputType.HTML,
                 )
-            }
+            },
         )
     }
 
@@ -178,11 +181,10 @@ tasks {
 
     runPluginVerifier {
         ideVersions.addAll(
-            "IC-2018.1.8",
-            "IC-2019.1.4",
             "IC-2020.1.4",
             "IC-2021.1.3",
-            "IC-2022.3"
+            "IC-2022.3",
+            "IC-2023.1",
         )
     }
 
