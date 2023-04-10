@@ -60,13 +60,13 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 JCheckBox().also {
                     it.isSelected = false
                 },
-                0
+                0,
             )
             add(
                 JCheckBox().also {
                     it.isSelected = false
                 },
-                1
+                1,
             )
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
@@ -89,13 +89,13 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 JCheckBox().also {
                     it.isSelected = true
                 },
-                0
+                0,
             )
             add(
                 JCheckBox().also {
                     it.isSelected = false
                 },
-                1
+                1,
             )
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
@@ -112,13 +112,13 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 JCheckBox().also {
                     it.isSelected = false
                 },
-                0
+                0,
             )
             add(
                 JCheckBox().also {
                     it.isSelected = true
                 },
-                1
+                1,
             )
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
@@ -135,13 +135,13 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 JCheckBox().also {
                     it.isSelected = true
                 },
-                0
+                0,
             )
             add(
                 JCheckBox().also {
                     it.isSelected = true
                 },
-                1
+                1,
             )
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
@@ -171,7 +171,7 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
             val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
             assertThat(
                 settingsComponent.components.toList(),
-                hasItems(isA(JCheckBox::class.java))
+                hasItems(isA(JCheckBox::class.java)),
             )
         }
 

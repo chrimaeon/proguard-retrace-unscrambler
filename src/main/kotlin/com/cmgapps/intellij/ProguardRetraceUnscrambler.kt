@@ -66,10 +66,10 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
                     ReTrace.REGULAR_EXPRESSION2,
                     allClassNamesSetting,
                     verboseSetting,
-                    mappingFile
+                    mappingFile,
                 ).retrace(
                     reader,
-                    writer
+                    writer,
                 )
                 buffer.readUtf8()
             }
@@ -120,7 +120,7 @@ class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private
         JLabel(
             bundle.getString("error_text").format(fileName),
             Messages.getWarningIcon(),
-            SwingConstants.HORIZONTAL
+            SwingConstants.HORIZONTAL,
         ).apply {
             iconTextGap = 10
             preferredSize = Dimension(300, 100)
