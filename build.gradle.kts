@@ -15,8 +15,8 @@
  */
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
-import kotlinx.kover.api.CounterType
-import kotlinx.kover.api.VerificationValueType
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.MetricType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import java.util.Date
@@ -53,24 +53,27 @@ kotlin {
     jvmToolchain(8)
 }
 
-kover {
+koverReport {
     filters {
-        classes {
-            excludes += listOf("com.cmgapps.intellij.ErrorDialog")
+        excludes {
+            classes("com.cmgapps.intellij.ErrorDialog")
         }
     }
-    htmlReport {
-        onCheck.set(true)
-    }
-    verify {
-        onCheck.set(true)
 
-        rule {
-            name = "Minimal line coverage rate in percent"
-            bound {
-                minValue = 80
-                counter = CounterType.LINE
-                valueType = VerificationValueType.COVERED_PERCENTAGE
+    defaults {
+        html {
+            onCheck = true
+        }
+
+        verify {
+            onCheck = true
+
+            rule {
+                bound {
+                    minValue = 80
+                    metric = MetricType.LINE
+                    aggregation = AggregationType.COVERED_PERCENTAGE
+                }
             }
         }
     }
