@@ -5,6 +5,7 @@
 ### Added
 
 ### Changed
+- Support for IDEA 2023.2
 
 ### Deprecated
 
