@@ -15,8 +15,8 @@
  */
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
-import kotlinx.kover.api.CounterType
-import kotlinx.kover.api.VerificationValueType
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.MetricType
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import java.util.Date
@@ -33,55 +33,47 @@ plugins {
     alias(libs.plugins.depUpdates)
     @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
+    id("ktlint")
 }
 
 group = "com.cmgapps.intellij"
-version = "1.7.0"
+version = "1.8.0"
 
 repositories {
     mavenCentral()
 }
 
-val ktlint: Configuration by configurations.creating
-
 intellij {
-    version.set("2022.3")
+    version.set("2023.1")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
 }
 
-val javaLanguageVersion = JavaLanguageVersion.of(8)
-
-java {
-    toolchain {
-        languageVersion.set(javaLanguageVersion)
-    }
-}
-
 kotlin {
-    jvmToolchain {
-        languageVersion.set(javaLanguageVersion)
-    }
+    jvmToolchain(8)
 }
 
-kover {
+koverReport {
     filters {
-        classes {
-            excludes += listOf("com.cmgapps.intellij.ErrorDialog")
+        excludes {
+            classes("com.cmgapps.intellij.ErrorDialog")
         }
     }
-    htmlReport {
-        onCheck.set(true)
-    }
-    verify {
-        onCheck.set(true)
 
-        rule {
-            name = "Minimal line coverage rate in percent"
-            bound {
-                minValue = 80
-                counter = CounterType.LINE
-                valueType = VerificationValueType.COVERED_PERCENTAGE
+    defaults {
+        html {
+            onCheck = true
+        }
+
+        verify {
+            onCheck = true
+
+            rule {
+                bound {
+                    minValue = 80
+                    metric = MetricType.LINE
+                    aggregation = AggregationType.COVERED_PERCENTAGE
+                }
             }
         }
     }
@@ -124,20 +116,7 @@ tasks {
         }
     }
 
-    val ktlint by registering(JavaExec::class) {
-        group = "Verification"
-        description = "Check Kotlin code style."
-        mainClass.set("com.pinterest.ktlint.Main")
-        classpath = ktlint
-        args = listOf(
-            "src/**/*.kt",
-            "--reporter=plain",
-            "--reporter=checkstyle,output=$buildDir/reports/ktlint.xml",
-        )
-    }
-
     check {
-        dependsOn(ktlint)
         dependsOn(verifyPlugin)
     }
 
@@ -185,6 +164,7 @@ tasks {
             "IC-2021.1.3",
             "IC-2022.3",
             "IC-2023.1",
+            "IC-2023.2", // latest
         )
     }
 
@@ -198,8 +178,6 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.proguard.retrace)
     implementation(libs.okio)
-
-    ktlint(libs.ktlint)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")

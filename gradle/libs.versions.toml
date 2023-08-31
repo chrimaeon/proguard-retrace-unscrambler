@@ -1,21 +1,21 @@
 [versions]
-kotlin = "1.8.20"
-mockito = "5.2.0"
-gradle = "8.0.2"
+kotlin = "1.9.10"
+mockito = "5.5.0"
+gradle = "8.3"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
-intellij = "org.jetbrains.intellij:1.13.3"
-changelog = "org.jetbrains.changelog:2.0.0"
-depUpdates = "com.github.ben-manes.versions:0.46.0"
-kover = "org.jetbrains.kotlinx.kover:0.6.1"
+intellij = "org.jetbrains.intellij:1.15.0"
+changelog = "org.jetbrains.changelog:2.2.0"
+depUpdates = "com.github.ben-manes.versions:0.47.0"
+kover = "org.jetbrains.kotlinx.kover:0.7.3"
 
 [libraries]
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin"}
 proguard-retrace = "com.guardsquare:proguard-retrace:7.3.2"
-okio = "com.squareup.okio:okio:3.3.0"
-ktlint = "com.pinterest:ktlint:0.48.2"
-junit-bom = "org.junit:junit-bom:5.9.2"
+okio = "com.squareup.okio:okio:3.5.0"
+ktlint = "com.pinterest:ktlint:0.50.0"
+junit-bom = "org.junit:junit-bom:5.10.0"
 hamcrest = "org.hamcrest:hamcrest-library:2.2"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit = { module =  "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
