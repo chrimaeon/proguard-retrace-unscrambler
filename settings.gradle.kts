@@ -15,3 +15,7 @@
  */
 
 rootProject.name = "Proguard Retrace Unscrambler"
+
+pluginManagement {
+    includeBuild("build-logic")
+}

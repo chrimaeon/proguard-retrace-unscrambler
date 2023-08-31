@@ -22,7 +22,7 @@ import org.jetbrains.changelog.Changelog
 import java.util.Date
 
 plugins {
-    `java`
+    java
     @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
     @Suppress("DSL_SCOPE_VIOLATION")
@@ -33,6 +33,7 @@ plugins {
     alias(libs.plugins.depUpdates)
     @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
+    id("ktlint")
 }
 
 group = "com.cmgapps.intellij"
@@ -42,26 +43,14 @@ repositories {
     mavenCentral()
 }
 
-val ktlint: Configuration by configurations.creating
-
 intellij {
     version.set("2023.1")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
 }
 
-val javaLanguageVersion = JavaLanguageVersion.of(8)
-
-java {
-    toolchain {
-        languageVersion.set(javaLanguageVersion)
-    }
-}
-
 kotlin {
-    jvmToolchain {
-        languageVersion.set(javaLanguageVersion)
-    }
+    jvmToolchain(8)
 }
 
 kover {
@@ -124,20 +113,7 @@ tasks {
         }
     }
 
-    val ktlint by registering(JavaExec::class) {
-        group = "Verification"
-        description = "Check Kotlin code style."
-        mainClass.set("com.pinterest.ktlint.Main")
-        classpath = ktlint
-        args = listOf(
-            "src/**/*.kt",
-            "--reporter=plain",
-            "--reporter=checkstyle,output=$buildDir/reports/ktlint.xml",
-        )
-    }
-
     check {
-        dependsOn(ktlint)
         dependsOn(verifyPlugin)
     }
 
@@ -198,8 +174,6 @@ dependencies {
     implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.proguard.retrace)
     implementation(libs.okio)
-
-    ktlint(libs.ktlint)
 
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
