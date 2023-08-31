@@ -22,7 +22,7 @@ import org.jetbrains.changelog.Changelog
 import java.util.Date
 
 plugins {
-    java
+    `java`
     @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
     @Suppress("DSL_SCOPE_VIOLATION")
@@ -45,7 +45,7 @@ repositories {
 val ktlint: Configuration by configurations.creating
 
 intellij {
-    version.set("2022.3")
+    version.set("2023.1")
     updateSinceUntilBuild.set(false)
     plugins.add("java")
 }
