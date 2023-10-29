@@ -37,7 +37,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.8.0"
+version = "1.9.0"
 
 repositories {
     mavenCentral()
@@ -137,11 +137,12 @@ tasks {
         sinceBuild.set("201")
         changeNotes.set(
             provider {
-                val item = if (changelog.has(project.version as String)) {
-                    changelog.get(project.version as String)
-                } else {
-                    changelog.getUnreleased()
-                }
+                val item =
+                    if (changelog.has(project.version as String)) {
+                        changelog.get(project.version as String)
+                    } else {
+                        changelog.getUnreleased()
+                    }
                 changelog.renderItem(
                     item.withHeader(false)
                         .withEmptySections(false),
@@ -164,7 +165,8 @@ tasks {
             "IC-2021.1.3",
             "IC-2022.3",
             "IC-2023.1",
-            "IC-2023.2", // latest
+            // latest
+            "IC-2023.2",
         )
     }
 
