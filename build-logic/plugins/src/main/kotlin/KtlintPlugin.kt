@@ -16,9 +16,10 @@ class KtlintPlugin : Plugin<Project> {
         with(target) {
             val ktlintConfiguration = configurations.create("ktlint")
 
-            val inputFiles = fileTree("src") {
-                include("**/*.kt")
-            }
+            val inputFiles =
+                fileTree("src") {
+                    include("**/*.kt")
+                }
             val outputDir = layout.buildDirectory.dir("reports")
 
             tasks.register("ktlintFormat", JavaExec::class.java) {
@@ -29,23 +30,26 @@ class KtlintPlugin : Plugin<Project> {
                 description = "Fix Kotlin code style deviations."
                 mainClass.set("com.pinterest.ktlint.Main")
                 classpath = ktlintConfiguration
+                jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
                 args = listOf("-F", "src/**/*.kt")
             }
 
-            val ktlintTask = tasks.register("ktlint", JavaExec::class.java) {
-                inputs.files(inputFiles)
-                outputs.dir(outputDir)
+            val ktlintTask =
+                tasks.register("ktlint", JavaExec::class.java) {
+                    inputs.files(inputFiles)
+                    outputs.dir(outputDir)
 
-                group = "Verification"
-                description = "Check Kotlin code style."
-                mainClass.set("com.pinterest.ktlint.Main")
-                classpath = ktlintConfiguration
-                args = listOf(
-                    "src/**/*.kt",
-                    "--reporter=plain",
-                    "--reporter=html,output=${outputDir.get().asFile.absolutePath}/ktlint.html",
-                )
-            }
+                    group = "Verification"
+                    description = "Check Kotlin code style."
+                    mainClass.set("com.pinterest.ktlint.Main")
+                    classpath = ktlintConfiguration
+                    args =
+                        listOf(
+                            "src/**/*.kt",
+                            "--reporter=plain",
+                            "--reporter=html,output=${outputDir.get().asFile.absolutePath}/ktlint.html",
+                        )
+                }
 
             tasks.named("check") {
                 dependsOn(ktlintTask)

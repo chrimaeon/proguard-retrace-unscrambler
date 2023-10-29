@@ -14,6 +14,16 @@
 
 ### Security
 
+## 1.9.0
+
+### Added
+
+- add error handling during retrace
+
+### Changed
+
+- update to latest dependiency versions
+
 ## 1.8.0
 
 ### Changed

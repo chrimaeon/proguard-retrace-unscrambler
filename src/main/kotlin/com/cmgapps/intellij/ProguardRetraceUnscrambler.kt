@@ -17,6 +17,7 @@
 package com.cmgapps.intellij
 
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
@@ -44,7 +45,12 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
 
     override fun getPresentableName() = "Proguard Retrace"
 
-    override fun unscramble(project: Project, text: String, logName: String, settings: JPanel?): String? {
+    override fun unscramble(
+        project: Project,
+        text: String,
+        logName: String,
+        settings: JPanel?,
+    ): String? {
         if (logName.isBlank() || text.isBlank()) return text
 
         val mappingFile = File(logName)
@@ -61,42 +67,56 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         return LineNumberReader(text.reader().buffered()).use { reader ->
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
-                ReTrace(
-                    ReTrace.REGULAR_EXPRESSION,
-                    ReTrace.REGULAR_EXPRESSION2,
-                    allClassNamesSetting,
-                    verboseSetting,
-                    mappingFile,
-                ).retrace(
-                    reader,
-                    writer,
-                )
-                buffer.readUtf8()
+                try {
+                    ReTrace(
+                        ReTrace.REGULAR_EXPRESSION,
+                        ReTrace.REGULAR_EXPRESSION2,
+                        allClassNamesSetting,
+                        verboseSetting,
+                        mappingFile,
+                    ).retrace(
+                        reader,
+                        writer,
+                    )
+                } catch (exc: Exception) {
+                    logger<ProguardRetraceUnscrambler>().error(exc)
+                    with(buffer) {
+                        clear()
+                        writeUtf8("Error on retrace - please report to support@cmgapps.com")
+                        writeUtf8("\n\n")
+                        writeUtf8(exc.stackTraceToString())
+                        flush()
+                    }
+                }
+                val result = buffer.readUtf8()
+                buffer.close()
+                result
             }
         }
     }
 
-    override fun createSettingsComponent() = JPanel().apply {
-        layout = BoxLayout(this, BoxLayout.Y_AXIS)
+    override fun createSettingsComponent() =
+        JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-        JCheckBox(bundle.getString("all_class_names_text")).apply {
-            isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
-            addItemListener {
-                properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("all_class_names_text")).apply {
+                isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
+                addItemListener {
+                    properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                }
+            }.let {
+                add(it, ALL_CLASS_NAMES_INDEX)
             }
-        }.let {
-            add(it, ALL_CLASS_NAMES_INDEX)
-        }
 
-        JCheckBox(bundle.getString("verbose_text")).apply {
-            isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
-            addItemListener {
-                properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("verbose_text")).apply {
+                isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
+                addItemListener {
+                    properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                }
+            }.let {
+                add(it, VERBOSE_INDEX)
             }
-        }.let {
-            add(it, VERBOSE_INDEX)
         }
-    }
 
     private companion object {
         private const val ALL_CLASS_NAMES_INDEX = 0
@@ -109,23 +129,23 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
 
 class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private val fileName: String) :
     DialogWrapper(project, false) {
-
     init {
         init()
     }
 
     override fun createActions(): Array<Action> = arrayOf(okAction)
 
-    override fun createCenterPanel(): JComponent = JPanel(BorderLayout()).apply {
-        JLabel(
-            bundle.getString("error_text").format(fileName),
-            Messages.getWarningIcon(),
-            SwingConstants.HORIZONTAL,
-        ).apply {
-            iconTextGap = 10
-            preferredSize = Dimension(300, 100)
-        }.let {
-            add(it, BorderLayout.CENTER)
+    override fun createCenterPanel(): JComponent =
+        JPanel(BorderLayout()).apply {
+            JLabel(
+                bundle.getString("error_text").format(fileName),
+                Messages.getWarningIcon(),
+                SwingConstants.HORIZONTAL,
+            ).apply {
+                iconTextGap = 10
+                preferredSize = Dimension(300, 100)
+            }.let {
+                add(it, BorderLayout.CENTER)
+            }
         }
-    }
 }

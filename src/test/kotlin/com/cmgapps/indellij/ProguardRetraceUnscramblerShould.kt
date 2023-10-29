@@ -17,11 +17,14 @@
 package com.cmgapps.indellij
 
 import com.cmgapps.intellij.ProguardRetraceUnscrambler
+import com.intellij.openapi.diagnostic.JulLogger
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.isA
+import org.hamcrest.Matchers.startsWith
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -34,7 +37,6 @@ import javax.swing.JPanel
 
 @ExtendWith(MockitoExtension::class)
 class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
-
     private lateinit var mappingFilePath: String
 
     private lateinit var settings: JPanel
@@ -151,9 +153,53 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames-verbose.txt")?.readText()))
     }
 
+    @Suppress("UnstableApiUsage")
+    @Test
+    fun `return error in retrace exception`() {
+        Logger.setFactory(OmitAssertionErrorLoggerFactory::class.java)
+
+        settings.apply {
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                0,
+            )
+            add(
+                JCheckBox().also {
+                    it.isSelected = false
+                },
+                1,
+            )
+        }
+
+        val stacktraceWithoutSourcefileReference =
+            """
+            Fatal Exception: java.lang.IllegalStateException: onDismiss not set
+                at o2.j0.w2(:49)
+                at androidx.fragment.app.e.z2(:13)
+                at androidx.fragment.app.e.a1(:16)
+                at androidx.fragment.app.Fragment.C1() 
+            """.trimIndent()
+
+        val result =
+            ProguardRetraceUnscrambler().unscramble(
+                project,
+                stacktraceWithoutSourcefileReference,
+                classLoader.getResource("mapping_error.txt")?.path!!,
+                settings,
+            )
+
+        assertThat(
+            result,
+            startsWith(
+                "Error on retrace - please report to support@cmgapps.com\n\n",
+            ),
+        )
+    }
+
     @Nested
     inner class UiRelated {
-
         @Test
         fun `create settings panel with box layout`() {
             val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
@@ -187,4 +233,10 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     //     val result = ProguardRetraceUnscrambler().unscramble(project, "stacktrace", "path/to/nowhere", settings)
     //     assertThat(result, nullValue())
     // }
+}
+
+private class OmitAssertionErrorLoggerFactory : Logger.Factory {
+    override fun getLoggerInstance(category: String): Logger {
+        return JulLogger(java.util.logging.Logger.getLogger("TestLogger"))
+    }
 }
