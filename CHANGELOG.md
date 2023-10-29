@@ -3,8 +3,10 @@
 ## Unreleased
 
 ### Added
+- add error handling during retrace
 
 ### Changed
+- update to latest dependiency versions
 
 ### Deprecated
 
