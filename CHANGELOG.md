@@ -3,10 +3,8 @@
 ## Unreleased
 
 ### Added
-- add error handling during retrace
 
 ### Changed
-- update to latest dependiency versions
 
 ### Deprecated
 
@@ -15,6 +13,16 @@
 ### Fixed
 
 ### Security
+
+## 1.9.0
+
+### Added
+
+- add error handling during retrace
+
+### Changed
+
+- update to latest dependiency versions
 
 ## 1.8.0
 
