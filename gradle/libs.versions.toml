@@ -14,7 +14,7 @@ kover = "org.jetbrains.kotlinx.kover:0.7.5"
 kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin"}
 proguard-retrace = "com.guardsquare:proguard-retrace:7.4.1"
 okio = "com.squareup.okio:okio:3.6.0"
-ktlint = "com.pinterest.ktlint:ktlint-cli:1.0.1"
+ktlint = "com.pinterest.ktlint:ktlint-cli:1.1.0"
 junit-bom = "org.junit:junit-bom:5.10.1"
 hamcrest = "org.hamcrest:hamcrest-library:2.2"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
