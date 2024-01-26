@@ -5,7 +5,7 @@ gradle = "8.4"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
-intellij = "org.jetbrains.intellij:1.16.1"
+intellij = "org.jetbrains.intellij:1.17.0"
 changelog = "org.jetbrains.changelog:2.2.0"
 depUpdates = "com.github.ben-manes.versions:0.50.0"
 kover = "org.jetbrains.kotlinx.kover:0.7.5"
