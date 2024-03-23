@@ -154,20 +154,34 @@ tasks {
 
     publishPlugin {
         // TODO read token from env if on CI
-        if (System.getenv("CI") == null) {
+        if (System.getenv("CI").isNullOrBlank()) {
             token.set(project.property("intellij.token") as String)
         }
     }
 
     runPluginVerifier {
-        ideVersions.addAll(
-            "IC-2020.1.4",
-            "IC-2021.1.3",
-            "IC-2022.3",
-            "IC-2023.1",
-            // latest
-            "IC-2023.2",
-        )
+        val ideToVerify =
+            buildList {
+                addAll(
+                    listOf(
+                        "IC-2023.1",
+                        // latest
+                        "IC-2023.3",
+                    ),
+                )
+
+                if (System.getenv("CI").isNullOrBlank()) {
+                    // test all locally
+                    addAll(
+                        listOf(
+                            "IC-2020.1.4",
+                            "IC-2021.1.3",
+                            "IC-2022.3",
+                        ),
+                    )
+                }
+            }
+        ideVersions.addAll(ideToVerify)
     }
 
     buildSearchableOptions {
