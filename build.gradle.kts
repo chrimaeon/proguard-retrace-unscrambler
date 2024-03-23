@@ -23,15 +23,10 @@ import java.util.Date
 
 plugins {
     java
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.changelog)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kotlin.jvm)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.depUpdates)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
     id("ktlint")
 }
@@ -106,11 +101,11 @@ tasks {
                 mapOf(
                     "Implementation-Title" to project.name,
                     "Implementation-Version" to project.version,
-                    "Built-By" to System.getProperty("user.name"),
-                    "Built-Date" to Date(),
-                    "Built-JDK" to System.getProperty("java.version"),
-                    "Built-Gradle" to gradle.gradleVersion,
-                    "Built-Kotlin" to libs.versions.kotlin.get(),
+                    "Implementation-Build-Date" to Date(),
+                    "Build-By" to System.getProperty("user.name"),
+                    "Build-Jdk" to System.getProperty("java.version"),
+                    "Build-Gradle" to gradle.gradleVersion,
+                    "Build-Kotlin" to libs.versions.kotlin.get(),
                 ),
             )
         }
@@ -154,7 +149,7 @@ tasks {
 
     publishPlugin {
         // TODO read token from env if on CI
-        if (System.getenv("CI").isNullOrBlank()) {
+        if (!isCi) {
             token.set(project.property("intellij.token") as String)
         }
     }
@@ -170,7 +165,7 @@ tasks {
                     ),
                 )
 
-                if (System.getenv("CI").isNullOrBlank()) {
+                if (!isCi) {
                     // test all locally
                     addAll(
                         listOf(
@@ -190,8 +185,10 @@ tasks {
     // endregion
 }
 
+val isCi: Boolean
+    get() = !System.getenv("CI").isNullOrBlank()
+
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.proguard.retrace)
     implementation(libs.okio)
 
