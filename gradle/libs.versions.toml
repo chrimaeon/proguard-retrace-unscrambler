@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.23"
-mockito = "5.10.0"
+mockito = "5.11.0"
 gradle = "8.4"
 
 [plugins]
