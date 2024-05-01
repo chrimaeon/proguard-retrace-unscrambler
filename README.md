@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen.svg?style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 [![JetBrains IntelliJ Plugins](https://img.shields.io/jetbrains/plugin/v/15267-proguard-retrace-unscrambler?style=for-the-badge)][3]
+[![JetBrains Plugin Rating](https://img.shields.io/jetbrains/plugin/r/stars/com.cmgapps.intellij.proguard-retrace-unscambler?style=for-the-badge&label=Rating)][3]
 
 This is an [IntelliJ IDEA][1] and [Android Studio][2] Plugin to de-obfuscate your stacktraces.
 
