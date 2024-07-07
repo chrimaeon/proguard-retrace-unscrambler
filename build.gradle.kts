@@ -16,28 +16,23 @@
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import java.util.Date
 
 plugins {
     java
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.intellij)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.changelog)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kotlin.jvm)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.depUpdates)
-    @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kover)
     id("ktlint")
 }
 
 group = "com.cmgapps.intellij"
-version = "1.9.0"
+version = "1.9.1"
 
 repositories {
     mavenCentral()
@@ -53,26 +48,30 @@ kotlin {
     jvmToolchain(8)
 }
 
-koverReport {
-    filters {
-        excludes {
-            classes("com.cmgapps.intellij.ErrorDialog")
-        }
-    }
-
-    defaults {
-        html {
-            onCheck = true
+kover {
+    reports {
+        filters {
+            excludes {
+                if (isCi) {
+                    classes("com.cmgapps.intellij.ErrorDialog")
+                }
+            }
         }
 
-        verify {
-            onCheck = true
+        total {
+            html {
+                onCheck = true
+            }
 
-            rule {
-                bound {
-                    minValue = 80
-                    metric = MetricType.LINE
-                    aggregation = AggregationType.COVERED_PERCENTAGE
+            verify {
+                onCheck = true
+
+                rule {
+                    bound {
+                        minValue = 80
+                        coverageUnits = CoverageUnit.LINE
+                        aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    }
                 }
             }
         }
@@ -106,11 +105,11 @@ tasks {
                 mapOf(
                     "Implementation-Title" to project.name,
                     "Implementation-Version" to project.version,
-                    "Built-By" to System.getProperty("user.name"),
-                    "Built-Date" to Date(),
-                    "Built-JDK" to System.getProperty("java.version"),
-                    "Built-Gradle" to gradle.gradleVersion,
-                    "Built-Kotlin" to libs.versions.kotlin.get(),
+                    "Implementation-Build-Date" to Date(),
+                    "Build-By" to System.getProperty("user.name"),
+                    "Build-Jdk" to System.getProperty("java.version"),
+                    "Build-Gradle" to gradle.gradleVersion,
+                    "Build-Kotlin" to libs.versions.kotlin.get(),
                 ),
             )
         }
@@ -126,10 +125,15 @@ tasks {
 
         rejectVersionIf {
             listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
-                """(?i).*[.-]?$qualifier[.\d-]*""".toRegex()
+                """(?i).*[.-]?$qualifier[.\d-]*"""
+                    .toRegex()
                     .containsMatchIn(candidate.version)
             }
         }
+    }
+
+    koverVerify {
+        dependsOn(ktlint)
     }
 
     // region IntelliJ Plugin
@@ -144,7 +148,8 @@ tasks {
                         changelog.getUnreleased()
                     }
                 changelog.renderItem(
-                    item.withHeader(false)
+                    item
+                        .withHeader(false)
                         .withEmptySections(false),
                     Changelog.OutputType.HTML,
                 )
@@ -154,20 +159,34 @@ tasks {
 
     publishPlugin {
         // TODO read token from env if on CI
-        if (System.getenv("CI") == null) {
+        if (!isCi) {
             token.set(project.property("intellij.token") as String)
         }
     }
 
     runPluginVerifier {
-        ideVersions.addAll(
-            "IC-2020.1.4",
-            "IC-2021.1.3",
-            "IC-2022.3",
-            "IC-2023.1",
-            // latest
-            "IC-2023.2",
-        )
+        val ideToVerify =
+            buildList {
+                addAll(
+                    listOf(
+                        "IC-2023.1",
+                        // latest
+                        "IC-2024.1",
+                    ),
+                )
+
+                if (!isCi) {
+                    // test all locally
+                    addAll(
+                        listOf(
+                            "IC-2020.1.4",
+                            "IC-2021.1.3",
+                            "IC-2022.3",
+                        ),
+                    )
+                }
+            }
+        ideVersions.addAll(ideToVerify)
     }
 
     buildSearchableOptions {
@@ -176,8 +195,10 @@ tasks {
     // endregion
 }
 
+val isCi: Boolean
+    get() = !System.getenv("CI").isNullOrBlank()
+
 dependencies {
-    implementation(libs.kotlin.stdlib.jdk8)
     implementation(libs.proguard.retrace)
     implementation(libs.okio)
 

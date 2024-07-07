@@ -23,6 +23,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.unscramble.UnscrambleSupport
 import okio.Buffer
+import org.jetbrains.annotations.VisibleForTesting
 import proguard.retrace.ReTrace
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -39,7 +40,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
+open class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     private val bundle = ResourceBundle.getBundle("Bundle")
     private val properties = PropertiesComponent.getInstance()
 
@@ -56,7 +57,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         val mappingFile = File(logName)
 
         if (!mappingFile.exists()) {
-            ErrorDialog(project, bundle, mappingFile.name).show()
+            getErrorDialog(project, bundle, mappingFile).show()
             return null
         }
 
@@ -68,7 +69,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
                 try {
-                    ReTrace(
+                    getRetrace(
                         ReTrace.REGULAR_EXPRESSION,
                         ReTrace.REGULAR_EXPRESSION2,
                         allClassNamesSetting,
@@ -95,27 +96,52 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         }
     }
 
+    @VisibleForTesting
+    open fun getRetrace(
+        regularExpression: String,
+        regularExpression2: String,
+        allClassNames: Boolean,
+        verbose: Boolean,
+        mappingFile: File,
+    ): ReTrace =
+        ReTrace(
+            regularExpression,
+            regularExpression2,
+            allClassNames,
+            verbose,
+            mappingFile,
+        )
+
+    @VisibleForTesting
+    open fun getErrorDialog(
+        project: Project,
+        bundle: ResourceBundle,
+        mappingFile: File,
+    ): DialogWrapper = ErrorDialog(project, bundle, mappingFile.name)
+
     override fun createSettingsComponent() =
         JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-            JCheckBox(bundle.getString("all_class_names_text")).apply {
-                isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
-                addItemListener {
-                    properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("all_class_names_text"))
+                .apply {
+                    isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
+                    addItemListener {
+                        properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                    }
+                }.let {
+                    add(it, ALL_CLASS_NAMES_INDEX)
                 }
-            }.let {
-                add(it, ALL_CLASS_NAMES_INDEX)
-            }
 
-            JCheckBox(bundle.getString("verbose_text")).apply {
-                isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
-                addItemListener {
-                    properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("verbose_text"))
+                .apply {
+                    isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
+                    addItemListener {
+                        properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                    }
+                }.let {
+                    add(it, VERBOSE_INDEX)
                 }
-            }.let {
-                add(it, VERBOSE_INDEX)
-            }
         }
 
     private companion object {
@@ -127,15 +153,20 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     }
 }
 
-class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private val fileName: String) :
-    DialogWrapper(project, false) {
+class ErrorDialog(
+    project: Project?,
+    private val bundle: ResourceBundle,
+    private val fileName: String,
+) : DialogWrapper(project, false) {
     init {
         init()
     }
 
-    override fun createActions(): Array<Action> = arrayOf(okAction)
+    @VisibleForTesting
+    public override fun createActions(): Array<Action> = arrayOf(okAction)
 
-    override fun createCenterPanel(): JComponent =
+    @VisibleForTesting
+    public override fun createCenterPanel(): JComponent =
         JPanel(BorderLayout()).apply {
             JLabel(
                 bundle.getString("error_text").format(fileName),
