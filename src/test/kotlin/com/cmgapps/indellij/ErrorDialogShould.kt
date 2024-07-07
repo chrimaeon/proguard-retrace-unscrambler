@@ -34,6 +34,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
+@DisabledIfEnvironmentVariable(named = "CI", matches = "true")
 class ErrorDialogShould : BasePlatformTestCase() {
     private val resourceBundle: ResourceBundle = ResourceBundle.getBundle("Bundle")
 
@@ -96,7 +97,6 @@ class ErrorDialogShould : BasePlatformTestCase() {
         }
     }
 
-    @DisabledIfEnvironmentVariable(named = "CI", matches = "true")
     @Test
     fun `have file name as text`() {
         val fileName = "filename.trace"

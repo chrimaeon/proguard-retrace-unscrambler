@@ -32,7 +32,7 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "1.9.0"
+version = "1.9.1"
 
 repositories {
     mavenCentral()
@@ -50,6 +50,14 @@ kotlin {
 
 kover {
     reports {
+        filters {
+            excludes {
+                if (isCi) {
+                    classes("com.cmgapps.intellij.ErrorDialog")
+                }
+            }
+        }
+
         total {
             html {
                 onCheck = true

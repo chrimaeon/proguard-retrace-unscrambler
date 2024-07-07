@@ -5,16 +5,24 @@
 ### Added
 
 ### Changed
-- update dependencies to latest version
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- Fixes issue with parsing stacktraces without source file declarations
 
 ### Security
+
+## 1.9.1
+
+### Changed
+
+- update dependencies to latest version
+
+### Fixed
+
+- Fixes issue with parsing stacktraces without source file declarations
 
 ## 1.9.0
 
