@@ -40,7 +40,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
+open class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     private val bundle = ResourceBundle.getBundle("Bundle")
     private val properties = PropertiesComponent.getInstance()
 
@@ -57,7 +57,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         val mappingFile = File(logName)
 
         if (!mappingFile.exists()) {
-            ErrorDialog(project, bundle, mappingFile.name).show()
+            getErrorDialog(project, bundle, mappingFile).show()
             return null
         }
 
@@ -69,7 +69,7 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
             val buffer = Buffer()
             PrintWriter(buffer.outputStream()).use { writer ->
                 try {
-                    ReTrace(
+                    getRetrace(
                         ReTrace.REGULAR_EXPRESSION,
                         ReTrace.REGULAR_EXPRESSION2,
                         allClassNamesSetting,
@@ -95,6 +95,29 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
             }
         }
     }
+
+    @VisibleForTesting
+    open fun getRetrace(
+        regularExpression: String,
+        regularExpression2: String,
+        allClassNames: Boolean,
+        verbose: Boolean,
+        mappingFile: File,
+    ): ReTrace =
+        ReTrace(
+            regularExpression,
+            regularExpression2,
+            allClassNames,
+            verbose,
+            mappingFile,
+        )
+
+    @VisibleForTesting
+    open fun getErrorDialog(
+        project: Project,
+        bundle: ResourceBundle,
+        mappingFile: File,
+    ): DialogWrapper = ErrorDialog(project, bundle, mappingFile.name)
 
     override fun createSettingsComponent() =
         JPanel().apply {

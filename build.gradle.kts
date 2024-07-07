@@ -50,6 +50,14 @@ kotlin {
 
 kover {
     reports {
+        filters {
+            excludes {
+                if (isCi) {
+                    classes("com.cmgapps.intellij.ErrorDialog")
+                }
+            }
+        }
+
         total {
             html {
                 onCheck = true
