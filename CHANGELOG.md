@@ -5,12 +5,14 @@
 ### Added
 
 ### Changed
+- update dependencies to latest version
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Fixes issue with parsing stacktraces without source file declarations
 
 ### Security
 

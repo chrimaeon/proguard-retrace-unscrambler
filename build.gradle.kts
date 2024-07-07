@@ -16,7 +16,7 @@
 
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
 import java.util.Date
@@ -48,26 +48,22 @@ kotlin {
     jvmToolchain(8)
 }
 
-koverReport {
-    filters {
-        excludes {
-            classes("com.cmgapps.intellij.ErrorDialog")
-        }
-    }
+kover {
+    reports {
+        total {
+            html {
+                onCheck = true
+            }
 
-    defaults {
-        html {
-            onCheck = true
-        }
+            verify {
+                onCheck = true
 
-        verify {
-            onCheck = true
-
-            rule {
-                bound {
-                    minValue = 80
-                    metric = MetricType.LINE
-                    aggregation = AggregationType.COVERED_PERCENTAGE
+                rule {
+                    bound {
+                        minValue = 80
+                        coverageUnits = CoverageUnit.LINE
+                        aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    }
                 }
             }
         }
@@ -121,10 +117,15 @@ tasks {
 
         rejectVersionIf {
             listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
-                """(?i).*[.-]?$qualifier[.\d-]*""".toRegex()
+                """(?i).*[.-]?$qualifier[.\d-]*"""
+                    .toRegex()
                     .containsMatchIn(candidate.version)
             }
         }
+    }
+
+    koverVerify {
+        dependsOn(ktlint)
     }
 
     // region IntelliJ Plugin
@@ -139,7 +140,8 @@ tasks {
                         changelog.getUnreleased()
                     }
                 changelog.renderItem(
-                    item.withHeader(false)
+                    item
+                        .withHeader(false)
                         .withEmptySections(false),
                     Changelog.OutputType.HTML,
                 )
@@ -161,7 +163,7 @@ tasks {
                     listOf(
                         "IC-2023.1",
                         // latest
-                        "IC-2023.3",
+                        "IC-2024.1",
                     ),
                 )
 

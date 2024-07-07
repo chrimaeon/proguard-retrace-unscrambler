@@ -23,6 +23,7 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.Messages
 import com.intellij.unscramble.UnscrambleSupport
 import okio.Buffer
+import org.jetbrains.annotations.VisibleForTesting
 import proguard.retrace.ReTrace
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -99,23 +100,25 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
         JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
-            JCheckBox(bundle.getString("all_class_names_text")).apply {
-                isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
-                addItemListener {
-                    properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("all_class_names_text"))
+                .apply {
+                    isSelected = properties.getBoolean(ALL_CLASS_NAMES_PROPERTY, false)
+                    addItemListener {
+                        properties.setValue(ALL_CLASS_NAMES_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                    }
+                }.let {
+                    add(it, ALL_CLASS_NAMES_INDEX)
                 }
-            }.let {
-                add(it, ALL_CLASS_NAMES_INDEX)
-            }
 
-            JCheckBox(bundle.getString("verbose_text")).apply {
-                isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
-                addItemListener {
-                    properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+            JCheckBox(bundle.getString("verbose_text"))
+                .apply {
+                    isSelected = properties.getBoolean(VERBOSE_PROPERTY, false)
+                    addItemListener {
+                        properties.setValue(VERBOSE_PROPERTY, it.stateChange == ItemEvent.SELECTED)
+                    }
+                }.let {
+                    add(it, VERBOSE_INDEX)
                 }
-            }.let {
-                add(it, VERBOSE_INDEX)
-            }
         }
 
     private companion object {
@@ -127,15 +130,20 @@ class ProguardRetraceUnscrambler : UnscrambleSupport<JPanel> {
     }
 }
 
-class ErrorDialog(project: Project?, private val bundle: ResourceBundle, private val fileName: String) :
-    DialogWrapper(project, false) {
+class ErrorDialog(
+    project: Project?,
+    private val bundle: ResourceBundle,
+    private val fileName: String,
+) : DialogWrapper(project, false) {
     init {
         init()
     }
 
-    override fun createActions(): Array<Action> = arrayOf(okAction)
+    @VisibleForTesting
+    public override fun createActions(): Array<Action> = arrayOf(okAction)
 
-    override fun createCenterPanel(): JComponent =
+    @VisibleForTesting
+    public override fun createCenterPanel(): JComponent =
         JPanel(BorderLayout()).apply {
             JLabel(
                 bundle.getString("error_text").format(fileName),
