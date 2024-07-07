@@ -2,5 +2,6 @@
 build/
 .idea/*
 !.idea/.name
+!.idea/icon.svg
 !.idea/copyright
 !.idea/codeStyles
