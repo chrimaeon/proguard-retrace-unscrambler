@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("JUnitMixedFramework")
+
 package com.cmgapps.indellij
 
 import com.cmgapps.intellij.ErrorDialog
