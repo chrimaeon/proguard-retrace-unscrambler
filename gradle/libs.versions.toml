@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.0.0"
 mockito = "5.12.0"
-gradle = "8.8"
+gradle = "8.9"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
