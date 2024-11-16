@@ -1,6 +1,9 @@
 .gradle/
 build/
 .idea/*
+.intellijPlatform/
+.kotlin/
 !.idea/.name
+!.idea/icon.svg
 !.idea/copyright
 !.idea/codeStyles

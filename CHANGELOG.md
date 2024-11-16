@@ -14,6 +14,12 @@
 
 ### Security
 
+## 1.9.2
+
+### Changed
+
+- Library updates
+
 ## 1.9.1
 
 ### Changed
