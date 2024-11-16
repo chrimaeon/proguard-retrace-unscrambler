@@ -59,7 +59,8 @@ class KtlintPlugin : Plugin<Project> {
 
             dependencies {
                 ktlintConfiguration(
-                    libs.findLibrary("ktlint")
+                    libs
+                        .findLibrary("ktlint")
                         .orElseThrow { NoSuchElementException("ktlint not found in version catalog") },
                 ) {
                     attributes {

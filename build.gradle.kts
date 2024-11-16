@@ -166,7 +166,7 @@ tasks {
     }
 
     check {
-        dependsOn(verifyPlugin)
+        dependsOn(verifyPlugin, ktlint)
     }
 
     dependencyUpdates {
