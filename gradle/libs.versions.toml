@@ -11,7 +11,7 @@ depUpdates = "com.github.ben-manes.versions:0.51.0"
 kover = "org.jetbrains.kotlinx.kover:0.8.3"
 
 [libraries]
-proguard-retrace = "com.guardsquare:proguard-retrace:7.6.0"
+proguard-retrace = "com.guardsquare:proguard-retrace:7.6.1"
 okio = "com.squareup.okio:okio:3.9.1"
 ktlint = "com.pinterest.ktlint:ktlint-cli:1.4.1"
 junit-bom = "org.junit:junit-bom:5.11.3"
