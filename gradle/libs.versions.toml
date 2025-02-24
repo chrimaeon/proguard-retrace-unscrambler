@@ -14,7 +14,7 @@ kover = "org.jetbrains.kotlinx.kover:0.9.0"
 proguard-retrace = "com.guardsquare:proguard-retrace:7.6.1"
 okio = "com.squareup.okio:okio:3.9.1"
 ktlint = "com.pinterest.ktlint:ktlint-cli:1.5.0"
-junit-bom = "org.junit:junit-bom:5.11.3"
+junit-bom = "org.junit:junit-bom:5.12.0"
 hamcrest = "org.hamcrest:hamcrest-library:3.0"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
