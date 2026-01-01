@@ -79,12 +79,11 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
-            create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
+            create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1") // LATEST
+            create(IntelliJPlatformType.IntellijIdeaCommunity, "2022.3") // MIN
             if (!isCi) {
                 create(IntelliJPlatformType.IntellijIdeaCommunity, "2023.1")
-                create(IntelliJPlatformType.IntellijIdeaCommunity, "2022.3")
-                create(IntelliJPlatformType.IntellijIdeaCommunity, "2021.1.3")
+                create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             }
         }
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#mutePluginVerifierProblems
