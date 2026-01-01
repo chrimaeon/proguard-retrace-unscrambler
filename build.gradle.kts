@@ -49,7 +49,7 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "211.0"
+            sinceBuild = "223.0"
             untilBuild = provider { null }
         }
 
@@ -102,14 +102,6 @@ kotlin {
 
 kover {
     reports {
-        filters {
-            excludes {
-                if (isCi) {
-                    classes("com.cmgapps.intellij.ErrorDialog")
-                }
-            }
-        }
-
         total {
             html {
                 onCheck = true
@@ -194,7 +186,7 @@ val isCi: Boolean
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2025.1")
+        intellijIdeaCommunity("2022.3")
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Bundled)

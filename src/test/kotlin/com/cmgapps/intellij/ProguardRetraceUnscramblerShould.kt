@@ -20,7 +20,8 @@ package com.cmgapps.intellij
 
 import com.intellij.openapi.diagnostic.JulLogger
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.blankString
@@ -32,20 +33,23 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.verify
-import org.mockito.kotlin.mock
+import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.ResourceBundle
 import java.util.zip.GZIPInputStream
+import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JCheckBox
-import javax.swing.JPanel
 
 class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     private lateinit var mappingFilePath: String
 
-    private lateinit var settings: JPanel
+    private lateinit var settings: Box
 
     private val classLoader = javaClass.classLoader
 
@@ -53,7 +57,7 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     fun beforeEach() {
         setUp()
         mappingFilePath = classLoader.getResource("mapping.txt")?.path ?: error("mapping.txt not found")
-        settings = JPanel()
+        settings = Box.createVerticalBox()
     }
 
     @AfterEach
@@ -66,8 +70,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -104,8 +112,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -136,8 +148,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -168,8 +184,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -200,8 +220,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -251,12 +275,15 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Test
     fun `handle exception during retrace`() {
         Logger.setFactory(OmitAssertionErrorLoggerFactory::class.java)
-
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -323,21 +350,32 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
             )
         }
 
-        val dialogMock = mock<DialogWrapper>()
+        val logName = "random/foo.bar.file/does.not.exist"
 
-        val unscrambler =
-            ProguardRetraceUnscrambler(
-                errorDialogFactory = { _, _, _ -> dialogMock },
+        Mockito.mockStatic<Messages>().use {
+            var capturesMessage: String? = null
+
+            it
+                .`when`<Unit> { Messages.showErrorDialog(any<Project>(), any(), any()) }
+                .doAnswer { (_: Project, message: String, _: String) ->
+                    capturesMessage = message
+                    null
+                }
+
+            ProguardRetraceUnscrambler().unscramble(
+                project,
+                "foo.bar",
+                logName,
+                settings,
             )
 
-        unscrambler.unscramble(
-            project,
-            "foo.bar",
-            "random/foo.bar.file/does.not.exist",
-            settings,
-        )
-
-        verify(dialogMock).show()
+            assertThat(
+                capturesMessage,
+                `is`(
+                    ResourceBundle.getBundle("Bundle").getString("error_text").format(logName),
+                ),
+            )
+        }
     }
 
     @Test
@@ -345,8 +383,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -387,8 +429,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = false
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = false
+                        },
+                    )
                 },
                 0,
             )
@@ -427,11 +473,16 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         settings.apply {
             // use R8
             add(
-                JCheckBox().also {
-                    it.isSelected = true
+                Box.createHorizontalBox().apply {
+                    add(
+                        JCheckBox().also {
+                            it.isSelected = true
+                        },
+                    )
                 },
                 0,
             )
+
             // verbose
             add(
                 JCheckBox().also {
@@ -474,6 +525,13 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
         assertThat(result, `is`(deobfuscated))
     }
 
+    @Test
+    fun `handle null settings`() {
+        assertThrows<IllegalArgumentException> {
+            ProguardRetraceUnscrambler().unscramble(project, "foo", "bar", null)
+        }
+    }
+
     @Nested
     inner class UiRelated {
         @Test
@@ -505,7 +563,6 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 }
 
 private class OmitAssertionErrorLoggerFactory : Logger.Factory {
-    @Suppress("UnstableApiUsage")
     override fun getLoggerInstance(category: String): Logger =
         JulLogger(
             java.util.logging.Logger

@@ -22,6 +22,7 @@ import com.android.tools.r8.origin.PathOrigin
 import com.android.tools.r8.position.Position
 import com.android.tools.r8.position.TextPosition
 import com.intellij.openapi.diagnostic.Logger
+import org.apache.log4j.Level
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.jupiter.api.BeforeEach
@@ -36,10 +37,22 @@ class R8DiagnosticsHandlerShould {
         object : Logger() {
             override fun isDebugEnabled(): Boolean = true
 
+            override fun debug(message: String?) {
+                stringWriter.append(message ?: "")
+            }
+
+            override fun debug(error: Throwable?) {
+                stringWriter.append(error?.message ?: "")
+            }
+
             override fun debug(
                 message: String?,
                 error: Throwable?,
             ) {
+                stringWriter.append(message ?: "")
+            }
+
+            override fun info(message: String?) {
                 stringWriter.append(message ?: "")
             }
 
@@ -63,6 +76,11 @@ class R8DiagnosticsHandlerShould {
                 vararg args: String?,
             ) {
                 stringWriter.append(Formatter().format(message ?: "", *args).toString())
+            }
+
+            @Deprecated("Deprecated in Java")
+            override fun setLevel(level: Level) {
+                // NO-OP
             }
         }
 
