@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Christian Grach <christian.grach@cmgapps.com>
+ * Copyright (c) 2026. Christian Grach <christian.grach@cmgapps.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 @file:Suppress("JUnitMixedFramework")
 
-package com.cmgapps.indellij
+package com.cmgapps.intellij
 
-import com.cmgapps.intellij.ErrorDialog
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.arrayWithSize

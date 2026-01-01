@@ -10,7 +10,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.named
 
-@Suppress("UnstableApiUsage")
+@Suppress("unused")
 class KtlintPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {

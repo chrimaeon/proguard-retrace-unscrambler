@@ -19,6 +19,7 @@ import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import java.util.Date
 
@@ -37,6 +38,7 @@ version = "1.9.2"
 
 repositories {
     mavenCentral()
+    google()
     intellijPlatform {
         defaultRepositories()
     }
@@ -47,7 +49,7 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "201.0"
+            sinceBuild = "211.0"
             untilBuild = provider { null }
         }
 
@@ -77,12 +79,12 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            ide("IC-2023.1")
-            ide("IC-2024.1")
+            create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
+            create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             if (!isCi) {
-                ide("IC-2020.3.4")
-                ide("IC-2021.1.3")
-                ide("IC-2022.3")
+                create(IntelliJPlatformType.IntellijIdeaCommunity, "2023.1")
+                create(IntelliJPlatformType.IntellijIdeaCommunity, "2022.3")
+                create(IntelliJPlatformType.IntellijIdeaCommunity, "2021.1.3")
             }
         }
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#mutePluginVerifierProblems
@@ -95,7 +97,7 @@ intellijPlatform {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(17)
 }
 
 kover {
@@ -192,21 +194,23 @@ val isCi: Boolean
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2023.1")
+        intellijIdeaCommunity("2025.1")
         bundledPlugin("com.intellij.java")
-        instrumentationTools()
+        testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Bundled)
         testFramework(TestFrameworkType.JUnit5)
         pluginVerifier()
     }
 
     implementation(libs.proguard.retrace)
-    implementation(libs.okio)
+    implementation(libs.google.r8)
 
     testImplementation(platform(libs.junit.bom))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    // Workaround for https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#junit5-test-framework-refers-to-junit4
-    testRuntimeOnly("junit:junit:4.13.2")
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.hamcrest)
     testImplementation(libs.bundles.mockito)
+    // Workaround for https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#junit5-test-framework-refers-to-junit4
+    testImplementation(libs.junit.junit)
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

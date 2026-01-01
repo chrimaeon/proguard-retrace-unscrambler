@@ -3,10 +3,13 @@
 ## Unreleased
 
 ### Added
+- Explicit R8 retrace dependency from [Google](https://developer.android.com/tools/retrace)
 
 ### Changed
+- The minimum IntelliJ IDEA Version is now **2021.1**
 
 ### Deprecated
+- Removed support for IntelliJ IDEA **2020.x**
 
 ### Removed
 
