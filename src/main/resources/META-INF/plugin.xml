@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+
 <!--
   ~ Copyright (c) 2020. Christian Grach <christian.grach@cmgapps.com>
   ~
@@ -14,9 +15,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <idea-plugin>
     <id>com.cmgapps.intellij.proguard-retrace-unscambler</id>
-    <name>Proguard Retrace Unscrambler</name>
+    <name>Proguard / R8 Retrace Unscrambler</name>
     <vendor email="support@cmgapps.com" url="https://www.cmgapps.com">CMG Mobile Apps</vendor>
 
     <description><![CDATA[Adds Unscrambler support for Proguard's mapping files and Android's R8 mapping files.
