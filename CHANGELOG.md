@@ -14,6 +14,24 @@
 
 ### Security
 
+## 2.0.0
+
+### Added
+
+- Explicit R8 retrace dependency from [Google](https://developer.android.com/tools/retrace)
+
+### Changed
+
+- The minimum IntelliJ IDEA Version is now **2022.3**
+- The minimum Android Studio Version is now **Android Studio Giraffe | 2022.3.1**
+
+### Removed
+
+- Removed support for IntelliJ IDEA from **2020.1** to **2022.2**
+- Removed support for Android Studio from
+  **Android Studio Arctic Fox | 2020.3.1 (July 2021)** to
+  **Android Studio Flamingo | 2022.2.1 (April 2023)**
+
 ## 1.9.2
 
 ### Changed
