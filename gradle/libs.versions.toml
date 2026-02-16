@@ -8,7 +8,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 intellij = "org.jetbrains.intellij.platform:2.10.5"
 changelog = "org.jetbrains.changelog:2.5.0"
 depUpdates = "com.github.ben-manes.versions:0.53.0"
-kover = "org.jetbrains.kotlinx.kover:0.9.4"
+kover = "org.jetbrains.kotlinx.kover:0.9.7"
 
 [libraries]
 proguard-retrace = "com.guardsquare:proguard-retrace:7.8.2"
