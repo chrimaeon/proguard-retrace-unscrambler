@@ -32,7 +32,7 @@ jobs:
             ~/.gradle/caches/modules-*
             ~/.gradle/caches/jars-*
             ~/.gradle/caches/build-cache-*
-          key: gradle-${{ hashFiles('**/build.gradle.kts', '**/Deps.kt') }}
+          key: gradle-${{ hashFiles('**/build.gradle.kts', '**/gradle/libs.versions.toml') }}
 
       - name: Gradle Wrapper Cache
         uses: actions/cache@v5
