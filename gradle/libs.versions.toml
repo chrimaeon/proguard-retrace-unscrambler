@@ -13,7 +13,7 @@ kover = "org.jetbrains.kotlinx.kover:0.9.7"
 [libraries]
 proguard-retrace = "com.guardsquare:proguard-retrace:7.8.2"
 ktlint = "com.pinterest.ktlint:ktlint-cli:1.8.0"
-junit-bom = "org.junit:junit-bom:6.0.2"
+junit-bom = "org.junit:junit-bom:6.0.3"
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junit-junit = "junit:junit:4.13.2"
 hamcrest = "org.hamcrest:hamcrest-library:3.0"
