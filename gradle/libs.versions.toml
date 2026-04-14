@@ -11,7 +11,7 @@ depUpdates = "com.github.ben-manes.versions:0.53.0"
 kover = "org.jetbrains.kotlinx.kover:0.9.8"
 
 [libraries]
-proguard-retrace = "com.guardsquare:proguard-retrace:7.8.2"
+proguard-retrace = "com.guardsquare:proguard-retrace:7.9.1"
 ktlint = "com.pinterest.ktlint:ktlint-cli:1.8.0"
 junit-bom = "org.junit:junit-bom:6.0.3"
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
