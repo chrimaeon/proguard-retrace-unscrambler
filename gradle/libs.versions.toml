@@ -20,7 +20,7 @@ hamcrest = "org.hamcrest:hamcrest-library:3.0"
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.3.0"
-google-r8 = "com.android.tools:r8:9.0.32"
+google-r8 = "com.android.tools:r8:9.1.31"
 
 [bundles]
 mockito = [
