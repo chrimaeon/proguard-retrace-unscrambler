@@ -32,69 +32,71 @@ fun interface Retracer {
             verbose: Boolean,
             allClassNames: Boolean,
             useR8: Boolean,
-        ): Retracer {
-            if (useR8) {
-                logger.info("Using R8 Retrace")
-                return R8Retracer(
-                    StringRetrace.create(
-                        ProguardMappingSupplier
-                            .builder()
-                            .setProguardMapProducer(ProguardMapProducer.fromPath(mappingFile.toPath()))
-                            .build(),
-                        R8DiagnosticsHandler(logger),
-                        R8Retracer.DEFAULT_REGULAR_EXPRESSION,
-                        verbose,
-                    ),
-                )
-            }
-
-            logger.info("Using Proguard Retrace")
-
-            return ProguardRetracer(
-                ReTrace(
-                    ReTrace.REGULAR_EXPRESSION,
-                    ReTrace.REGULAR_EXPRESSION2,
-                    allClassNames,
-                    verbose,
-                    mappingFile,
-                ),
-            )
-        }
-    }
-}
-
-private class R8Retracer(
-    private val retrace: StringRetrace,
-) : Retracer {
-    override fun retraceStackTrace(stacktrace: String): String {
-        val parsedStacktrace =
-            LineNumberReader(stacktrace.reader()).use { reader ->
-                reader.readLines()
-            }
-
-        val writer = StringWriter()
-        writer.use {
-            retrace
-                .retraceStackTrace(parsedStacktrace, RetraceStackTraceContext.empty())
-                .result
-                .forEach { frameResults ->
-                    frameResults.ambiguousResult.forEach {
-                        writer.append(it.result.joinToString(separator = "\n")).append("\n")
-                    }
+        ): Retracer =
+            when {
+                useR8 -> {
+                    logger.info("Using R8 Retrace")
+                    R8Retracer(
+                        StringRetrace.create(
+                            ProguardMappingSupplier
+                                .builder()
+                                .setProguardMapProducer(ProguardMapProducer.fromPath(mappingFile.toPath()))
+                                .build(),
+                            R8DiagnosticsHandler(logger),
+                            R8Retracer.DEFAULT_REGULAR_EXPRESSION,
+                            verbose,
+                        ),
+                    )
                 }
-        }
 
-        return writer.toString()
+                else -> {
+                    logger.info("Using Proguard Retrace")
+                    ProguardRetracer(
+                        ReTrace(
+                            ReTrace.REGULAR_EXPRESSION,
+                            ReTrace.REGULAR_EXPRESSION2,
+                            allClassNames,
+                            verbose,
+                            mappingFile,
+                        ),
+                    )
+                }
+            }
     }
 
-    companion object {
-        // This is a slight modification of the default regular expression shown for proguard-retrace
-        // that allows for retracing classes in the form <class>: lorem ipsum...
-        // Seems like Proguard retrace is expecting the form "Caused by: <class>".
-        // com/android/tools/r8/retrace/internal/StackTraceRegularExpressionParser.java
-        const val DEFAULT_REGULAR_EXPRESSION =
-            "(?:.*?\\bat\\s+%c\\.%m\\s*\\(%S\\)\\p{Z}*(?:~\\[.*\\])?)" +
-                "|(?:(?:(?:%c|.*)?[:\"]\\s+)?%c(?:(:|]).*)?)"
+    private class R8Retracer(
+        private val retrace: StringRetrace,
+    ) : Retracer {
+        override fun retraceStackTrace(stacktrace: String): String {
+            val parsedStacktrace =
+                LineNumberReader(stacktrace.reader()).use { reader ->
+                    reader.readLines()
+                }
+
+            val writer = StringWriter()
+            writer.use {
+                retrace
+                    .retraceStackTrace(parsedStacktrace, RetraceStackTraceContext.empty())
+                    .result
+                    .forEach { frameResults ->
+                        frameResults.ambiguousResult.forEach {
+                            writer.append(it.result.joinToString(separator = "\n")).append("\n")
+                        }
+                    }
+            }
+
+            return writer.toString()
+        }
+
+        companion object {
+            // This is a slight modification of the default regular expression shown for proguard-retrace
+            // that allows for retracing classes in the form <class>: lorem ipsum...
+            // Seems like Proguard retrace is expecting the form "Caused by: <class>".
+            // com/android/tools/r8/retrace/internal/StackTraceRegularExpressionParser.java
+            const val DEFAULT_REGULAR_EXPRESSION =
+                "(?:.*?\\bat\\s+%c\\.%m\\s*\\(%S\\)\\p{Z}*(?:~\\[.*\\])?)" +
+                    "|(?:(?:(?:%c|.*)?[:\"]\\s+)?%c(?:(:|]).*)?)"
+        }
     }
 }
 
@@ -116,24 +118,21 @@ private class ProguardRetracer(
 internal class R8DiagnosticsHandler(
     private val logger: Logger,
 ) : DiagnosticsHandler {
-    override fun error(error: Diagnostic) {
-        ByteArrayOutputStream().use {
-            DiagnosticsHandler.printDiagnosticToStream(error, "R8 Retrace Error", PrintStream(it))
-            logger.error(it.toString())
-        }
-    }
+    override fun error(error: Diagnostic) = log(error, "R8 Retrace Error", logger::error)
 
-    override fun warning(error: Diagnostic) {
-        ByteArrayOutputStream().use {
-            DiagnosticsHandler.printDiagnosticToStream(error, "R8 Retrace Warning", PrintStream(it))
-            logger.warn(it.toString())
-        }
-    }
+    override fun warning(warning: Diagnostic) = log(warning, "R8 Retrace Warning", logger::warn)
 
-    override fun info(error: Diagnostic) {
-        ByteArrayOutputStream().use {
-            DiagnosticsHandler.printDiagnosticToStream(error, "R8 Retrace Info", PrintStream(it))
-            logger.info(it.toString())
+    override fun info(info: Diagnostic) = log(info, "R8 Retrace Info", logger::info)
+
+    private fun log(
+        diagnostic: Diagnostic,
+        title: String,
+        logMessage: (String) -> Unit,
+    ) {
+        val output = ByteArrayOutputStream()
+        PrintStream(output).use { stream ->
+            DiagnosticsHandler.printDiagnosticToStream(diagnostic, title, stream)
         }
+        logMessage(output.toString(Charsets.UTF_8))
     }
 }

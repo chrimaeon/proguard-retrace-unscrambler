@@ -21,6 +21,8 @@ kotlin = "2.4.21"
 mockito = "5.24.0"
 gradle = "9.8.1"
 
+plugin-version = "2.0.1"
+
 [libraries]
 
 proguard-retrace = "com.guardsquare:proguard-retrace:7.10.0"

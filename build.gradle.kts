@@ -22,7 +22,9 @@ plugins {
 }
 
 group = "com.cmgapps.intellij"
-version = "2.0.0"
+version =
+    libs.versions.plugin.version
+        .get()
 
 repositories {
     mavenCentral()

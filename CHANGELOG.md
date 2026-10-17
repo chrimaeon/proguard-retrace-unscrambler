@@ -2,19 +2,11 @@
 
 ## Unreleased
 
-### Added
+## 2.0.1
 
 ### Changed
 
 - Update dependencies to latest version
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## 2.0.0
 
