@@ -20,8 +20,7 @@ package com.cmgapps.intellij
 
 import com.intellij.openapi.diagnostic.JulLogger
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.TestDialogManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.blankString
@@ -34,9 +33,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -352,30 +348,29 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
         val logName = "random/foo.bar.file/does.not.exist"
 
-        Mockito.mockStatic<Messages>().use {
-            var capturesMessage: String? = null
-
-            it
-                .`when`<Unit> { Messages.showErrorDialog(any<Project>(), any(), any()) }
-                .doAnswer { (_: Project, message: String, _: String) ->
-                    capturesMessage = message
-                    null
-                }
-
+        var capturesMessage: String? = null
+        val previousTestDialog =
+            TestDialogManager.setTestDialog { message ->
+                capturesMessage = message
+                0
+            }
+        try {
             ProguardRetraceUnscrambler().unscramble(
                 project,
                 "foo.bar",
                 logName,
                 settings,
             )
-
-            assertThat(
-                capturesMessage,
-                `is`(
-                    ResourceBundle.getBundle("Bundle").getString("error_text").format(logName),
-                ),
-            )
+        } finally {
+            TestDialogManager.setTestDialog(previousTestDialog)
         }
+
+        assertThat(
+            capturesMessage,
+            `is`(
+                ResourceBundle.getBundle("Bundle").getString("error_text").format(logName),
+            ),
+        )
     }
 
     @Test

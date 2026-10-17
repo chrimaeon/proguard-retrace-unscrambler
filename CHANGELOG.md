@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+- Error dialog issue
+
+### Security
+
 ## 2.0.1
 
 ### Changed
@@ -22,9 +36,8 @@
 ### Removed
 
 - Removed support for IntelliJ IDEA from **2020.1** to **2022.2**
-- Removed support for Android Studio from
-  **Android Studio Arctic Fox | 2020.3.1 (July 2021)** to
-  **Android Studio Flamingo | 2022.2.1 (April 2023)**
+- Removed support for Android Studio from **Android Studio Arctic Fox | 2020.3.1 (July 2021)** to **Android Studio
+  Flamingo | 2022.2.1 (April 2023)**
 
 ## 1.9.2
 

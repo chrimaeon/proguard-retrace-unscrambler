@@ -8,6 +8,7 @@ import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.changelog.Changelog
+import org.jetbrains.intellij.platform.gradle.Constants
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import java.util.Date
@@ -163,7 +164,7 @@ val isCi: Boolean
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2022.3")
+        intellijIdeaCommunity(Constants.Constraints.MINIMAL_INTELLIJ_PLATFORM_VERSION.toString())
         bundledPlugin("com.intellij.java")
         testFramework(TestFrameworkType.Platform)
         testFramework(TestFrameworkType.Bundled)

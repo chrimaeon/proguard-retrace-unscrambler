@@ -1,23 +1,15 @@
 /*
  * Copyright (c) 2020. Christian Grach <christian.grach@cmgapps.com>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 package com.cmgapps.intellij
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
@@ -73,7 +65,15 @@ class ProguardRetraceUnscrambler(
         val mappingFile = File(logName)
 
         if (!mappingFile.exists()) {
-            Messages.showErrorDialog(project, bundle.getString("error_text").format(logName), "")
+            val message = bundle.getString("error_text").format(logName)
+            ApplicationManager.getApplication().invokeAndWait(
+                {
+                    if (!project.isDisposed) {
+                        Messages.showErrorDialog(project, message, "")
+                    }
+                },
+                ModalityState.defaultModalityState(),
+            )
             return null
         }
 
