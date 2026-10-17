@@ -1,20 +1,9 @@
 /*
  * Copyright (c) 2020. Christian Grach <christian.grach@cmgapps.com>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
-import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -28,13 +17,14 @@ plugins {
     alias(libs.plugins.intellij)
     alias(libs.plugins.changelog)
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.depUpdates)
     alias(libs.plugins.kover)
     id("ktlint")
 }
 
 group = "com.cmgapps.intellij"
-version = "2.0.0"
+version =
+    libs.versions.plugin.version
+        .get()
 
 repositories {
     mavenCentral()
@@ -79,11 +69,12 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1") // LATEST
             create(IntelliJPlatformType.IntellijIdeaCommunity, "2022.3") // MIN
+            create(IntelliJPlatformType.IntellijIdea, "2026.2") // LATEST
             if (!isCi) {
                 create(IntelliJPlatformType.IntellijIdeaCommunity, "2023.1")
                 create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
+                create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             }
         }
         // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#mutePluginVerifierProblems
@@ -160,19 +151,6 @@ tasks {
 
     check {
         dependsOn(verifyPlugin, ktlint)
-    }
-
-    dependencyUpdates {
-        revision = "release"
-        gradleReleaseChannel = GradleReleaseChannel.CURRENT.id
-
-        rejectVersionIf {
-            listOf("alpha", "beta", "rc", "cr", "m", "eap").any { qualifier ->
-                """(?i).*[.-]?$qualifier[.\d-]*"""
-                    .toRegex()
-                    .containsMatchIn(candidate.version)
-            }
-        }
     }
 
     koverVerify {

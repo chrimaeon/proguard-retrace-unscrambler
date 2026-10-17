@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2023. Christian Grach <christian.grach@cmgapps.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import org.gradle.api.Plugin
@@ -20,7 +22,7 @@ class KtlintPlugin : Plugin<Project> {
                 fileTree("src") {
                     include("**/*.kt")
                 }
-            val outputDir = layout.buildDirectory.dir("reports")
+            val outputDir = layout.buildDirectory.dir("reports/ktlint")
 
             tasks.register("ktlintFormat", JavaExec::class.java) {
                 inputs.files(inputFiles)
