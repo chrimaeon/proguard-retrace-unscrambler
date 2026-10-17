@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Update dependencies to latest version
+
 ### Deprecated
 
 ### Removed
