@@ -12,9 +12,13 @@
 
 ### Fixed
 
-- Error dialog issue
-
 ### Security
+
+## 2.0.2
+
+### Fixed
+
+- Error dialog issue
 
 ## 2.0.1
 
