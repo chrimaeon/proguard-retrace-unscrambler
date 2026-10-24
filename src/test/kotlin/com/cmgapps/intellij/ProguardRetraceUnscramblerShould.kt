@@ -20,8 +20,11 @@ package com.cmgapps.intellij
 
 import com.intellij.openapi.diagnostic.JulLogger
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.ui.TestDialogManager
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.ui.dsl.builder.panel
+import com.intellij.ui.dsl.builder.selected
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.blankString
 import org.hamcrest.Matchers.hasItems
@@ -38,22 +41,20 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.ResourceBundle
 import java.util.zip.GZIPInputStream
-import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JCheckBox
 
 class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     private lateinit var mappingFilePath: String
 
-    private lateinit var settings: Box
-
     private val classLoader = javaClass.classLoader
+    private lateinit var unscrambler: ProguardRetraceUnscrambler
 
     @BeforeEach
     fun beforeEach() {
         setUp()
         mappingFilePath = classLoader.getResource("mapping.txt")?.path ?: error("mapping.txt not found")
-        settings = Box.createVerticalBox()
+        unscrambler = ProguardRetraceUnscrambler()
     }
 
     @AfterEach
@@ -63,182 +64,83 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     @Test
     fun `de-obfuscate stacktrace`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
 
-        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+        val result = unscrambler.unscramble(project, stacktrace, mappingFilePath, DialogPanel())
 
         assertThat(result, `is`(classLoader.getResource("deobfuscated.txt")?.readText()))
     }
 
     @Test
     fun `return empty text when stacktrace is empty`() {
-        val result = ProguardRetraceUnscrambler().unscramble(project, "", mappingFilePath, settings)
+        val result = ProguardRetraceUnscrambler().unscramble(project, "", mappingFilePath, DialogPanel())
         assertThat(result, `is`(""))
     }
 
     @Test
     fun `de-obfuscate allClassNames stacktrace`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = true
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(true)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
+
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
 
-        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+        val result = unscrambler.unscramble(project, stacktrace, mappingFilePath, DialogPanel())
 
         assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames.txt")?.readText()))
     }
 
     @Test
     fun `de-obfuscate verbose stacktrace`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = true
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(true)
+            }
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
 
-        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+        val result = unscrambler.unscramble(project, stacktrace, mappingFilePath, DialogPanel())
 
         assertThat(result, `is`(classLoader.getResource("deobfuscated-verbose.txt")?.readText()))
     }
 
     @Test
     fun `de-obfuscate allClassNames and verbose stacktrace`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = true
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = true
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(true)
+                unscrambler.verbose = checkBox("Verbose").selected(true)
+            }
         }
         val stacktrace = classLoader.getResource("stacktrace.txt")?.readText() ?: error("stack.trace not found")
 
-        val result = ProguardRetraceUnscrambler().unscramble(project, stacktrace, mappingFilePath, settings)
+        val result = unscrambler.unscramble(project, stacktrace, mappingFilePath, DialogPanel())
 
         assertThat(result, `is`(classLoader.getResource("deobfuscated-allClassNames-verbose.txt")?.readText()))
     }
 
     @Test
     fun `handle stacktrace without source file reference`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
 
         val stacktraceWithoutSourcefileReference =
@@ -249,11 +151,11 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 "    at androidx.fragment.app.Fragment.C1()\n"
 
         val result =
-            ProguardRetraceUnscrambler().unscramble(
+            unscrambler.unscramble(
                 project,
                 stacktraceWithoutSourcefileReference,
                 classLoader.getResource("mapping_error.txt")?.path!!,
-                settings,
+                DialogPanel(),
             )
 
         assertThat(
@@ -271,33 +173,6 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Test
     fun `handle exception during retrace`() {
         Logger.setFactory(OmitAssertionErrorLoggerFactory::class.java)
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
-        }
 
         val errorRetracer = Retracer { throw IOException("cannot retrace on tests") }
 
@@ -306,12 +181,20 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 retracerFactory = { _, _, _, _, _ -> errorRetracer },
             )
 
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
+        }
+
         val result =
             unscrambler.unscramble(
                 project,
                 "foo.bar",
                 classLoader.getResource("mapping_error.txt")?.path!!,
-                settings,
+                DialogPanel(),
             )
 
         assertThat(
@@ -322,28 +205,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     @Test
     fun `handle mapping file does not exist`() {
-        settings.apply {
-            // use R8
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
 
         val logName = "random/foo.bar.file/does.not.exist"
@@ -355,11 +222,11 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
                 0
             }
         try {
-            ProguardRetraceUnscrambler().unscramble(
+            unscrambler.unscramble(
                 project,
                 "foo.bar",
                 logName,
-                settings,
+                DialogPanel(),
             )
         } finally {
             TestDialogManager.setTestDialog(previousTestDialog)
@@ -375,42 +242,22 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     @Test
     fun `return text value when logName is blank`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
 
         val text = "Stacktrace"
 
         val result =
-            ProguardRetraceUnscrambler().unscramble(
+            unscrambler.unscramble(
                 project,
                 text,
                 "",
-                settings,
+                DialogPanel(),
             )
 
         assertThat(
@@ -421,40 +268,20 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     @Test
     fun `return blank when text is blank`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = false
-                        },
-                    )
-                },
-                0,
-            )
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(false)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
 
         val result =
-            ProguardRetraceUnscrambler().unscramble(
+            unscrambler.unscramble(
                 project,
                 " \t",
                 "foo",
-                settings,
+                DialogPanel(),
             )
 
         assertThat(
@@ -465,33 +292,12 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
     @Test
     fun `use R8`() {
-        settings.apply {
-            // use R8
-            add(
-                Box.createHorizontalBox().apply {
-                    add(
-                        JCheckBox().also {
-                            it.isSelected = true
-                        },
-                    )
-                },
-                0,
-            )
-
-            // verbose
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                1,
-            )
-            // allClassNames
-            add(
-                JCheckBox().also {
-                    it.isSelected = false
-                },
-                2,
-            )
+        panel {
+            row {
+                unscrambler.useR8 = checkBox("Use R8").selected(true)
+                unscrambler.allClassNames = checkBox("All Class Names").selected(false)
+                unscrambler.verbose = checkBox("Verbose").selected(false)
+            }
         }
 
         val mappingFile =
@@ -507,11 +313,11 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
             classLoader.getResource("stacktrace-r8.txt")?.readText() ?: error("stacktrace-r8.txt not found")
 
         val result =
-            ProguardRetraceUnscrambler().unscramble(
+            unscrambler.unscramble(
                 project,
                 stacktrace,
                 mappingFile.absolutePath,
-                settings,
+                DialogPanel(),
             )
 
         val deobfuscated =
@@ -530,20 +336,9 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
     @Nested
     inner class UiRelated {
         @Test
-        fun `create settings panel with box layout`() {
-            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
-            assertThat(settingsComponent.layout, isA(BoxLayout::class.java))
-        }
-
-        @Test
-        fun `create settings panel with 2 items`() {
-            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
-            assertThat(settingsComponent.componentCount, `is`(3))
-        }
-
-        @Test
         fun `create settings panel with checkboxes`() {
-            val settingsComponent = ProguardRetraceUnscrambler().createSettingsComponent()
+            val settingsComponent = unscrambler.createSettingsComponent()
+
             assertThat(
                 settingsComponent.components.toList(),
                 hasItems(isA(JCheckBox::class.java)),
@@ -552,7 +347,7 @@ class ProguardRetraceUnscramblerShould : BasePlatformTestCase() {
 
         @Test
         fun `return display name`() {
-            assertThat(ProguardRetraceUnscrambler().presentableName, `is`("Proguard / R8 Retrace"))
+            assertThat(unscrambler.presentableName, `is`("Proguard / R8 Retrace"))
         }
     }
 }

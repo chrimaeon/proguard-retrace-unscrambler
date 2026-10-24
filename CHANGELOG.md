@@ -6,6 +6,9 @@
 
 ### Changed
 
+- The minimum IntelliJ IDEA Version is now **2023.3**
+- The minimum Android Studio Version is now **Android Studio Jellyfish | 2023.3.1**
+
 ### Deprecated
 
 ### Removed

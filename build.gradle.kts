@@ -40,7 +40,7 @@ intellijPlatform {
 
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "223.0"
+            sinceBuild = "233.0"
             untilBuild = provider { null }
         }
 
@@ -70,10 +70,9 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            create(IntelliJPlatformType.IntellijIdeaCommunity, "2022.3") // MIN
+            create(IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
             create(IntelliJPlatformType.IntellijIdea, "2026.2") // LATEST
             if (!isCi) {
-                create(IntelliJPlatformType.IntellijIdeaCommunity, "2023.1")
                 create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
                 create(IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             }

@@ -9,7 +9,7 @@ package com.cmgapps.intellij
 import com.android.tools.r8.Diagnostic
 import com.android.tools.r8.DiagnosticsHandler
 import com.android.tools.r8.retrace.ProguardMapProducer
-import com.android.tools.r8.retrace.ProguardMappingSupplier
+import com.android.tools.r8.retrace.RetraceOptions
 import com.android.tools.r8.retrace.RetraceStackTraceContext
 import com.android.tools.r8.retrace.StringRetrace
 import com.intellij.openapi.diagnostic.Logger
@@ -20,13 +20,13 @@ import java.io.File
 import java.io.LineNumberReader
 import java.io.PrintStream
 import java.io.PrintWriter
-import java.io.StringWriter
 
+@FunctionalInterface
 fun interface Retracer {
     fun retraceStackTrace(stacktrace: String): String
 
     companion object {
-        fun create(
+        operator fun invoke(
             mappingFile: File,
             logger: Logger,
             verbose: Boolean,
@@ -38,13 +38,11 @@ fun interface Retracer {
                     logger.info("Using R8 Retrace")
                     R8Retracer(
                         StringRetrace.create(
-                            ProguardMappingSupplier
-                                .builder()
+                            RetraceOptions
+                                .builder(R8DiagnosticsHandler(logger))
                                 .setProguardMapProducer(ProguardMapProducer.fromPath(mappingFile.toPath()))
+                                .setVerbose(verbose)
                                 .build(),
-                            R8DiagnosticsHandler(logger),
-                            R8Retracer.DEFAULT_REGULAR_EXPRESSION,
-                            verbose,
                         ),
                     )
                 }
@@ -67,51 +65,27 @@ fun interface Retracer {
     private class R8Retracer(
         private val retrace: StringRetrace,
     ) : Retracer {
-        override fun retraceStackTrace(stacktrace: String): String {
-            val parsedStacktrace =
-                LineNumberReader(stacktrace.reader()).use { reader ->
-                    reader.readLines()
-                }
-
-            val writer = StringWriter()
-            writer.use {
-                retrace
-                    .retraceStackTrace(parsedStacktrace, RetraceStackTraceContext.empty())
-                    .result
-                    .forEach { frameResults ->
-                        frameResults.ambiguousResult.forEach {
-                            writer.append(it.result.joinToString(separator = "\n")).append("\n")
-                        }
-                    }
-            }
-
-            return writer.toString()
-        }
-
-        companion object {
-            // This is a slight modification of the default regular expression shown for proguard-retrace
-            // that allows for retracing classes in the form <class>: lorem ipsum...
-            // Seems like Proguard retrace is expecting the form "Caused by: <class>".
-            // com/android/tools/r8/retrace/internal/StackTraceRegularExpressionParser.java
-            const val DEFAULT_REGULAR_EXPRESSION =
-                "(?:.*?\\bat\\s+%c\\.%m\\s*\\(%S\\)\\p{Z}*(?:~\\[.*\\])?)" +
-                    "|(?:(?:(?:%c|.*)?[:\"]\\s+)?%c(?:(:|]).*)?)"
-        }
+        override fun retraceStackTrace(stacktrace: String): String =
+            retrace
+                .retraceStackTrace(stacktrace.lineSequence().toList(), RetraceStackTraceContext.empty())
+                .result
+                .flatMap { it.ambiguousResult }
+                .joinToString(separator = "\n") { it.result.joinToString(separator = "\n") }
     }
 }
 
 private class ProguardRetracer(
     private val retrace: ReTrace,
 ) : Retracer {
-    override fun retraceStackTrace(stacktrace: String): String {
-        val buffer = ByteArrayOutputStream()
-        LineNumberReader(stacktrace.reader().buffered()).use { reader ->
-            PrintWriter(buffer).use { writer ->
-                retrace.retrace(reader, writer)
-            }
-        }
-        return buffer.toString()
-    }
+    override fun retraceStackTrace(stacktrace: String): String =
+        ByteArrayOutputStream()
+            .also { buffer ->
+                LineNumberReader(stacktrace.reader()).use { reader ->
+                    PrintWriter(buffer).use { writer ->
+                        retrace.retrace(reader, writer)
+                    }
+                }
+            }.toString()
 }
 
 @VisibleForTesting
