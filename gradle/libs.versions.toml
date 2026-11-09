@@ -11,7 +11,7 @@ mockito = [
 [plugins]
 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-intellij = "org.jetbrains.intellij.platform:2.19.0"
+intellij = "org.jetbrains.intellij.platform:2.20.0"
 changelog = "org.jetbrains.changelog:2.5.0"
 kover = "org.jetbrains.kotlinx.kover:0.9.11"
 
